@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard | PunctuPlay</title>
+    <style>
+        /* === CSS MULAI DI SINI === */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", sans-serif;
+            overflow: hidden;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'images/background.png' %}") no-repeat center center/cover;
+            filter: blur(6px);
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .leaderboard {
+            background: rgba(93, 110, 255, 0.9);
+            border-radius: 20px;
+            width: 70%;
+            max-width: 700px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .title {
+            background-color: #5a6cff;
+            display: inline-block;
+            padding: 10px 40px;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 40px;
+            font-weight: bold;
+            font-size: 18px;
+            background-color: rgba(80, 90, 255, 0.7);
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+        }
+
+        .row:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 25px;
+            background-color: #5a6cff;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            background-color: #6d7bff;
+        }
+        /* === CSS SELESAI === */
+    </style>
+</head>
+<body>
+
+    <div class="background"></div>
+
+    <div class="container">
+        <div class="leaderboard">
+            <div class="title">LEADERBOARD</div>
+
+            <div class="header">
+                <span class="col-left">NAMA</span>
+                <span class="col-right">SKOR</span>
+            </div>
+
+            <div class="row">
+                <span class="col-left">Player 1</span>
+                <span class="col-right">1500</span>
+            </div>
+            <div class="row">
+                <span class="col-left">Player 2</span>
+                <span class="col-right">1200</span>
+            </div>
+            <div class="row">
+                <span class="col-left">Player 3</span>
+                <span class="col-right">1000</span>
+            </div>
+            <div class="row">
+                <span class="col-left">Player 4</span>
+                <span class="col-right">500</span>
+            </div>
+
+            <a href="blog/home" class="btn-back">Kembali Ke Halaman Utama</a>
+        </div>
+    </div>
+
+</body>
+</html>
