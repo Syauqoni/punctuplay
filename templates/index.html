@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -9,13 +10,16 @@
 
   <style>
     body {
-      background-color: #E8D9FF; /* Ungu muda */
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+    background-image: url("{% static 'images/background.png' %}");
+    background-size: cover;         
+    background-position: center;    
+    background-repeat: no-repeat;   
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     }
 
     .menu-button {
@@ -40,7 +44,7 @@
     }
 
     .logo {
-      width: 150px;
+      width: 450px;
       height: auto;
       margin-bottom: 40px;
     }
@@ -54,10 +58,8 @@
 </head>
 <body>
 
-  <!-- Logo di tengah atas -->
   <img src="static/images/logo.png" alt="Logo Aplikasi" class="logo"/>
 
-  <!-- Dua tombol di bawah logo -->
   <div class="button-container">
     <a href="blog/login/" class="menu-button">Login</a>
     <a href="blog/register/" class="menu-button">Register</a>
