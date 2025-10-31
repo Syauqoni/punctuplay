@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrasi</title>
+  <title>Halaman Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
@@ -34,15 +34,34 @@
       z-index: -1;
     }
 
-    /* Kartu form registrasi */
+    /* Card form login */
     .card {
       border-radius: 15px;
-      background: rgba(255, 255, 255, 0.2); /* efek semi transparan */
-      backdrop-filter: blur(12px); /* efek frosted glass */
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
       width: 100%;
       max-width: 400px;
       padding: 25px;
+    }
+
+    h3 {
+      color: white;
+      font-weight: bold;
+    }
+
+    .form-label {
+      color: white;
+      font-weight: 600;
+    }
+
+    .form-control {
+      background: rgba(255, 255, 255, 0.85);
+      border: none;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 5px rgba(110, 140, 251, 0.8);
     }
 
     .btn-custom {
@@ -54,21 +73,18 @@
     }
 
     .btn-custom:hover {
-      background-color: #5A76E0;
+      background-color: #5b79e5;
       transform: scale(1.03);
-    }
-
-    .form-label {
-      font-weight: 600;
     }
 
     a {
       text-decoration: none;
-      color: #6E8CFB;
+      color: #dfe4ff;
     }
 
     a:hover {
       text-decoration: underline;
+      color: white;
     }
   </style>
 </head>
@@ -78,48 +94,25 @@
   <div class="background"></div>
 
   <!-- Konten utama -->
-  <div class="card shadow">
-    <h3 class="text-center mb-3 text-white fw-bold">Registrasi</h3>
-
-    {% if messages %}
-      <div class="alert alert-info">
-        {% for message in messages %}
-          <div>{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
+  <div class="card shadow p-4">
+    <h3 class="text-center mb-3">Login</h3>
 
     <form>
       <div class="mb-3">
-        <label for="name" class="form-label text-white">Nama</label>
-        <input type="text" class="form-control" id="name" name="name" required autofocus>
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" placeholder="Masukkan email Anda" required>
       </div>
 
       <div class="mb-3">
-        <label for="username" class="form-label text-white">Username</label>
-        <input type="text" class="form-control" id="username" name="username" required>
+        <label for="password" class="form-label">Kata Sandi</label>
+        <input type="password" class="form-control" id="password" placeholder="Masukkan kata sandi" required>
       </div>
 
-      <div class="mb-3">
-        <label for="email" class="form-label text-white">Email</label>
-        <input type="email" class="form-control" id="email" name="email" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="password" class="form-label text-white">Kata Sandi</label>
-        <input type="password" class="form-control" id="password" name="password" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="password_confirmation" class="form-label text-white">Konfirmasi Kata Sandi</label>
-        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
-      </div>
-
-      <button type="submit" class="btn btn-custom w-100">Daftar</button>
+      <button type="submit" class="btn btn-custom w-100"><a href="/blog/home/">login</a></button>
     </form>
 
-    <div class="text-center mt-3 text-white">
-      <a href="/accounts/login/">Sudah punya akun? Login di sini</a>
+    <div class="text-center mt-3">
+      <a href="/accounts/register/">Belum punya akun? Daftar di sini</a>
     </div>
   </div>
 
