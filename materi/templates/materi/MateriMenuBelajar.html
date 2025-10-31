@@ -1,11 +1,152 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Pilih Topik Materi | PunctuPlay</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", sans-serif;
+            overflow: hidden;
+        }
+
+        /* Background blur seperti leaderboard */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("{% static 'images/background.png' %}");
+            background-size: cover;
+            background-position: center;
+            filter: blur(8px);
+            transform: scale(1.1);
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .title {
+            background-color: #5a6cff;
+            color: white;
+            padding: 12px 40px;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            width: 80%;
+            max-width: 900px;
+        }
+
+        .card {
+            background-color: rgba(93, 110, 255, 0.9);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .card-top {
+            background-color: rgba(140, 155, 255, 0.6);
+            height: 120px;
+        }
+
+        .card-title {
+            background-color: #5a6cff;
+            color: white;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .btn-home {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background-color: #5a6cff;
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 22px;
+            transition: 0.3s;
+        }
+
+        .btn-home:hover {
+            background-color: #6d7bff;
+        }
+    </style>
 </head>
 <body>
-    
+    <div class="background"></div>
+
+    <a href="/blog/home" class="btn-home">🏠</a>
+
+    <div class="container">
+        <div class="title">PILIH TOPIK MATERI</div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-top"></div>
+                <div class="card-title">PENGGUNAAN TANDA (.)</div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"></div>
+                <div class="card-title">PENGGUNAAN TANDA (,)</div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"></div>
+                <div class="card-title">PENGGUNAAN TANDA (?)</div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"></div>
+                <div class="card-title">PENGGUNAAN TANDA (!)</div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"></div>
+                <div class="card-title">PENGGUNAAN TANDA (“)</div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"></div>
+                <div class="card-title">PENGGUNAAN TANDA (‘)</div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
