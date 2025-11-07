@@ -1,11 +1,206 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kuis Drag & Drop Tanda Baca</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: "Poppins", sans-serif;
+      background-image: url("{% static 'images/background.png' %}");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .container {
+      background: rgba(82, 105, 255, 0.88);
+      border-radius: 20px;
+      padding: 40px 50px;
+      width: 95%;
+      max-width: 950px;
+      text-align: center;
+      color: #ffffff;
+      border: 2px solid white;
+      position: relative;
+      min-height: 400px; 
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .question {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 30px;
+      line-height: 1.8;
+      color: #f8f9ff;
+    }
+
+    .drop-slot {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      margin: 0 6px;
+      border: 2px solid #dfe6ff;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #2b2b2b;
+      font-weight: bold;
+      text-align: center;
+      line-height: 38px;
+      transition: 0.3s;
+    }
+
+    .drop-slot.hovered {
+      background-color: #b9ffcc;
+      border-color: #32cd32;
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: center;
+      margin-top: 35px;
+    }
+
+    .option {
+      background-color: rgba(118, 138, 255, 0.95);
+      padding: 15px;
+      border-radius: 50%;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      width: 55px;
+      height: 55px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: grab;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: all 0.25s ease;
+    }
+
+    .option:hover {
+      transform: scale(1.15);
+      background-color: rgba(255, 255, 255, 0.2);
+      border-color: #ffffff;
+    }
+
+    .option:active {
+      transform: scale(1.1);
+      cursor: grabbing;
+    }
+
+    .btn-berikutnya {
+      position: absolute;
+      bottom: 25px;
+      right: 30px;
+      background-color: #ffffff;
+      border-radius: 30px;
+      padding: 10px 25px;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      border: 3px solid #5a6cff;
+      cursor: pointer;
+    }
+
+    /* Sementara */
+    .btn-berikutnya a {
+        color: black;
+        transition: 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-berikutnya a:hover {
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-berikutnya:hover {
+      background-color: #5a6cff;
+      border: 3px solid #ffffff;
+      color: #ffffff;
+    }
+
+  </style>
 </head>
 <body>
-    
+
+  <div class="container">
+    <div class="question" id="question">
+      Lia pergi ke pasar<span class="drop-slot" data-index="1"></span>
+      membeli sayur<span class="drop-slot" data-index="2"></span>
+      buah<span class="drop-slot" data-index="3"></span>
+      dan ikan segar<span class="drop-slot" data-index="4"></span>
+    </div>
+
+    <div class="options" id="options">
+      <div class="option" draggable="true" data-value=",">,</div>
+      <div class="option" draggable="true" data-value=".">.</div>
+      <div class="option" draggable="true" data-value="?">?</div>
+      <div class="option" draggable="true" data-value="!">!</div>
+    </div>
+  </div>
+
+<button type="submit" class="btn btn-berikutnya"><a href="/quiz/Isian">Berikutnya ➜</a></button>
+
+  <script>
+    let dragged = null;
+
+    document.querySelectorAll('.option').forEach(opt => {
+      opt.addEventListener('dragstart', e => {
+        dragged = e.target;
+      });
+    });
+
+    document.querySelectorAll('.drop-slot').forEach(slot => {
+      slot.addEventListener('dragover', e => e.preventDefault());
+
+      slot.addEventListener('drop', e => {
+        e.preventDefault();
+        if (dragged) {
+          const value = dragged.getAttribute('data-value');
+          if (slot.textContent.trim() !== "") {
+            restoreOption(slot.textContent.trim());
+          }
+          slot.textContent = value;
+          dragged.remove();
+        }
+      });
+
+      slot.addEventListener('click', () => {
+        const value = slot.textContent.trim();
+        if (value !== "") {
+          restoreOption(value);
+          slot.textContent = "";
+        }
+      });
+    });
+
+    function restoreOption(value) {
+      const container = document.getElementById("options");
+      const newOption = document.createElement("div");
+      newOption.className = "option";
+      newOption.setAttribute("draggable", "true");
+      newOption.setAttribute("data-value", value);
+      newOption.textContent = value;
+      newOption.addEventListener('dragstart', e => {
+        dragged = e.target;
+      });
+      container.appendChild(newOption);
+    }
+  </script>
+
 </body>
 </html>

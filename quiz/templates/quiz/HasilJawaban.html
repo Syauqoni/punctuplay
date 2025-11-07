@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Hasil Kuis</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <style>
+    body {
+      background-image: url("{% static 'images/background.png' %}");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffffff;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px 0;
+    }
+
+    h1, h4, h5 {
+      color: #ffffff;
+    }
+
+    .container {
+      background-color: rgba(93, 110, 255, 0.9);
+      border-radius: 20px;
+      padding: 40px;
+      border: 2px solid white;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(4px);
+    }
+
+    .btn-leaderboard {
+        background-color: #5a6cff;
+        color: #ffffff;
+        font-weight: bold;
+        border: 3px solid #ffffff;
+        border-radius: 10px;
+        padding: 10px 25px;
+        transition: 0.3s ease;
+        box-shadow: 0 0 6px rgba(255, 255, 255, 0.6); 
+    }
+
+    .btn-leaderboard:hover {
+      background-color: rgba(93, 110, 255, 0.9);
+      color: #fff;
+    }
+
+    .section {
+      background-color: #ffffffdd;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+    }
+
+    strong {
+      color: #2d403a;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="text-center mb-5">
+      <h1 class="display-5">Hasil Kuis</h1>
+      <p class="lead">Total Poin Anda: <strong>{{ total_poin }}</strong></p>
+      <a href="/blog/leaderboard/" class="btn btn-leaderboard mt-3">Lihat Leaderboard</a>
+    </div>
+
+    <h4 class="mb-3">Penjelasan Jawaban Anda</h4>
+
+    {# --- Pilihan Ganda --- #}
+    {% if pilgan %}
+      <div class="section">
+        <h5>Pilihan Ganda</h5>
+        <ol>
+          {% for soal in pilgan %}
+            <li class="mb-3">
+              <p><strong>Pertanyaan:</strong> {{ soal.pertanyaan }}</p>
+              <p><strong>Jawaban Anda:</strong> {{ soal.jawaban_user|default:"Tidak dijawab" }}</p>
+              <p><strong>Jawaban Benar:</strong> {{ soal.jawaban }}</p>
+              <p><strong>Penjelasan:</strong> {{ soal.penjelasan }}</p>
+              <hr>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    {% endif %}
+
+    {# --- Drag and Drop --- #}
+    {% if drag %}
+      <div class="section">
+        <h5>Drag and Drop</h5>
+        <ol>
+          {% for soal in drag %}
+            <li class="mb-3">
+              <p><strong>Pertanyaan:</strong> {{ soal.pertanyaan }}</p>
+              <p><strong>Urutan Anda:</strong>
+                {% if soal.urutan_user %}
+                  {{ soal.urutan_user|join:", " }}
+                {% else %}
+                  Tidak dijawab
+                {% endif %}
+              </p>
+              <p><strong>Urutan Benar:</strong> {{ soal.urutan|join:", " }}</p>
+              <p><strong>Penjelasan:</strong> {{ soal.penjelasan }}</p>
+              <hr>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    {% endif %}
+
+    {# --- Benar / Salah --- #}
+    {% if benar_salah %}
+      <div class="section">
+        <h5>Benar / Salah</h5>
+        <ol>
+          {% for soal in benar_salah %}
+            <li class="mb-3">
+              <p><strong>Pernyataan:</strong> {{ soal.pertanyaan }}</p>
+              <p><strong>Jawaban Anda:</strong>
+                {% if soal.jawaban_user == '1' %}
+                  Benar
+                {% elif soal.jawaban_user == '0' %}
+                  Salah
+                {% else %}
+                  Tidak dijawab
+                {% endif %}
+              </p>
+              <p><strong>Jawaban Benar:</strong>
+                {% if soal.jawaban == '1' %}
+                  Benar
+                {% else %}
+                  Salah
+                {% endif %}
+              </p>
+              <p><strong>Penjelasan:</strong> {{ soal.penjelasan }}</p>
+              <hr>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    {% endif %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

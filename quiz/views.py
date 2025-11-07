@@ -15,3 +15,6 @@ def MenuKuis(request):
 
 def Pilgan(request):
     return render(request, 'quiz/Pilgan.html')
+
+def HasilJawaban(request):
+    return render(request, 'quiz/HasilJawaban.html')
