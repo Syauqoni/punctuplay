@@ -1,8 +1,7 @@
-from django.urls import path, include
-
+from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('MateriDetail/', views.MateriDetail),
-    path('MateriMenuBelajar/', views.MateriMenuBelajar),
+    path('MateriMenuBelajar/', views.MateriMenuBelajar, name='materi_menu'),
+    path('MateriDetail/<int:id>/', views.MateriDetail, name='materi_detail'),
 ]
