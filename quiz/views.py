@@ -18,5 +18,11 @@ def HasilJawaban(request):
     return render(request, 'quiz/HasilJawaban.html')
 
 def MenuKuis(request):
-    kuis_list = Quiz.objects.all()
-    return render(request, "quiz/MenuKuis.html", {"kuis_list": kuis_list})
+    level = request.GET.get("level", "1")
+
+    kuis_list = Quiz.objects.filter(level=level)
+
+    return render(request, "quiz/MenuKuis.html", {
+        "kuis_list": kuis_list,
+        "level": level,   
+    })

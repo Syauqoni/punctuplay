@@ -17,7 +17,6 @@
             background-color: #f4f4f4;
         }
 
-        /* Background blur */
         .background {
             position: fixed;
             top: 0;
@@ -53,7 +52,6 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        /* Grid 5 kolom seperti referensi */
         .grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -62,6 +60,7 @@
             max-width: 1400px;
         }
 
+        /* Tinggi default card */
         .card {
             background-color: rgba(93, 110, 255, 0.9);
             border-radius: 16px;
@@ -70,8 +69,20 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
-            height: 230px;
+            height: 240px;
             text-decoration: none;
+        }
+
+        .level-1 .card {
+            height: 230px;
+        }
+
+        .level-2 .card {
+            height: 270px; 
+        }
+
+        .level-3 .card {
+            height: 300px; /
         }
 
         .card:hover {
@@ -106,6 +117,10 @@
             padding: 12px;
             font-weight: 600;
             font-size: 16px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-home {
@@ -161,24 +176,18 @@
     <div class="title">PILIH TOPIK KUIS</div>
 
     <div class="level-container" style="margin-bottom: 30px; text-align:center;">
-        <a href="?level=1" 
-        style="background:#5a6cff; color:white; padding:10px 25px; 
-                border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
+        <a href="?level=1" style="background:#5a6cff; color:white; padding:10px 25px; border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
             LEVEL 1
         </a>
-        <a href="?level=2" 
-        style="background:#5a6cff; color:white; padding:10px 25px; 
-                border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
+        <a href="?level=2" style="background:#5a6cff; color:white; padding:10px 25px; border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
             LEVEL 2
         </a>
-        <a href="?level=3" 
-        style="background:#5a6cff; color:white; padding:10px 25px; 
-                border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
+        <a href="?level=3" style="background:#5a6cff; color:white; padding:10px 25px; border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
             LEVEL 3
         </a>
     </div>
 
-        <div class="grid">
+        <div class="grid level-{{ level }}">
             {% for item in kuis_list %}
             <a href="{% url 'pilgan'%}" class="card">
                 <div class="card-top">

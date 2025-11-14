@@ -3,4 +3,4 @@ from .models import Quiz
 
 @admin.register(Quiz)
 class QuizAdmin(admin.ModelAdmin):
-    list_display = ('judul',)
+    list_display = ('judul','level')
