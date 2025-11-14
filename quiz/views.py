@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import Quiz
 
 # Create your views here.
 def BenarSalah(request):
@@ -10,11 +11,12 @@ def DragandDrop(request):
 def Isian(request):
     return render(request, 'quiz/Isian.html')
 
-def MenuKuis(request):
-    return render(request, 'quiz/MenuKuis.html')
-
 def Pilgan(request):
     return render(request, 'quiz/Pilgan.html')
 
 def HasilJawaban(request):
     return render(request, 'quiz/HasilJawaban.html')
+
+def MenuKuis(request):
+    kuis_list = Quiz.objects.all()
+    return render(request, "quiz/MenuKuis.html", {"kuis_list": kuis_list})

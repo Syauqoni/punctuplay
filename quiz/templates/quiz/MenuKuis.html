@@ -4,18 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Topik Materi | PunctuPlay</title>
+    <title>Pilih Topik Kuis | PunctuPlay</title>
+
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: "Poppins", sans-serif;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100vh;
+            background-color: #f4f4f4;
         }
 
         /* Background blur */
         .background {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -32,9 +36,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            padding: 60px 20px 80px;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
         .title {
@@ -48,12 +53,13 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
+        /* Grid 5 kolom seperti referensi */
         .grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            width: 80%;
-            max-width: 950px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 25px;
+            width: 90%;
+            max-width: 1400px;
         }
 
         .card {
@@ -64,7 +70,8 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            height: 230px;
+            text-decoration: none;
         }
 
         .card:hover {
@@ -74,7 +81,7 @@
 
         .card-top {
             background-color: rgba(140, 155, 255, 0.6);
-            height: 160px; /* Lebih tinggi biar gambar muat lebih besar */
+            height: 150px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -82,11 +89,11 @@
         }
 
         .card-top img {
-            max-width: 85%;
-            max-height: 140px;
+            max-width: 90%;
+            max-height: 130px;
             object-fit: contain;
+            transition: 0.3s ease;
             border-radius: 12px;
-            transition: transform 0.3s ease;
         }
 
         .card:hover .card-top img {
@@ -96,17 +103,13 @@
         .card-title {
             background-color: #5a6cff;
             color: white;
-            padding: 14px;
+            padding: 12px;
             font-weight: 600;
-            font-size: 17px;
-        }
-
-        .card {
-            text-decoration: none;
+            font-size: 16px;
         }
 
         .btn-home {
-            position: absolute;
+            position: fixed;
             top: 25px;
             left: 25px;
             background-color: #5a6cff;
@@ -121,64 +124,78 @@
             text-decoration: none;
             font-size: 22px;
             transition: 0.3s;
+            z-index: 2;
         }
 
         .btn-home:hover {
             background-color: #6d7bff;
         }
+
+        /* Responsif */
+        @media (max-width: 1200px) {
+            .grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+            .title { font-size: 20px; padding: 10px 25px; }
+        }
+
+        @media (max-width: 400px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
     </style>
 </head>
 <body>
+
     <div class="background"></div>
 
     <a href="/blog/home" class="btn-home">🏠</a>
 
     <div class="container">
-        <div class="title">PILIH TOPIK KUIS</div>
+    <div class="title">PILIH TOPIK KUIS</div>
+
+    <div class="level-container" style="margin-bottom: 30px; text-align:center;">
+        <a href="?level=1" 
+        style="background:#5a6cff; color:white; padding:10px 25px; 
+                border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
+            LEVEL 1
+        </a>
+        <a href="?level=2" 
+        style="background:#5a6cff; color:white; padding:10px 25px; 
+                border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
+            LEVEL 2
+        </a>
+        <a href="?level=3" 
+        style="background:#5a6cff; color:white; padding:10px 25px; 
+                border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
+            LEVEL 3
+        </a>
+    </div>
 
         <div class="grid">
-            <a href="/quiz/Pilgan" class="card">
+            {% for item in kuis_list %}
+            <a href="{% url 'pilgan'%}" class="card">
                 <div class="card-top">
-                    <img src="{% static 'images/AssetKuis/tanda_titik.png' %}" alt="Tanda Titik">
+                    {% if item.gambar %}
+                        <img src="{% static item.gambar %}" alt="{{ item.judul }}">
+                    {% else %}
+                        <img src="{% static 'images/AssetKuis/' %}{{ item.gambar }}" alt="{{ item.judul }}">
+                    {% endif %}
                 </div>
-                <div class="card-title">PENGGUNAAN TANDA (.)</div>
+                <div class="card-title">{{ item.judul }}</div>
             </a>
-
-            <a href="/quiz/Pilgan" class="card">
-                <div class="card-top">
-                    <img src="{% static 'images/AssetKuis/tanda_koma.png' %}" alt="Tanda Koma">
-                </div>
-                <div class="card-title">PENGGUNAAN TANDA (,)</div>
-            </a>
-
-            <a href="/quiz/Pilgan" class="card">
-                <div class="card-top">
-                    <img src="{% static 'images/AssetKuis/tanda_tanya.png' %}" alt="Tanda Tanya">
-                </div>
-                <div class="card-title">PENGGUNAAN TANDA (?)</div>
-            </a>
-
-            <a href="/quiz/Pilgan" class="card">
-                <div class="card-top">
-                    <img src="{% static 'images/AssetKuis/tanda_seru.png' %}" alt="Tanda Seru">
-                </div>
-                <div class="card-title">PENGGUNAAN TANDA (!)</div>
-            </a>
-
-            <a href="/quiz/Pilgan" class="card">
-                <div class="card-top">
-                    <img src="{% static 'images/AssetKuis/tanda_kutip_ganda.png' %}" alt="Tanda Kutip Ganda">
-                </div>
-                <div class="card-title">PENGGUNAAN TANDA (“)</div>
-            </a>
-
-            <a href="/quiz/Pilgan" class="card">
-                <div class="card-top">
-                    <img src="{% static 'images/AssetKuis/tanda_kutip_tunggal.png' %}" alt="Tanda Kutip Tunggal">
-                </div>
-                <div class="card-title">PENGGUNAAN TANDA (‘)</div>
-            </a>
+            {% empty %}
+            <p style="color:white;">Belum ada data kuis.</p>
+            {% endfor %}
         </div>
+
     </div>
+
 </body>
 </html>
