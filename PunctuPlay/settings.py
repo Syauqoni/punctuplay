@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'accounts',
     'materi',
     'quiz',
+    'media',
 ]
 
 MIDDLEWARE = [

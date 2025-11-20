@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,45 +36,101 @@
       z-index: -1;
     }
 
-    /* Profil di pojok kiri atas */
+    /* PROFILE BOX */
     .profile-box {
       position: absolute;
       top: 20px;
       left: 20px;
-      background: rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 15px 18px;
       display: flex;
       align-items: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      gap: 14px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
       color: #000;
-      font-weight: 500;
+      min-width: 260px;
     }
 
-    .profile-score {
-      width: 45px;
-      height: 45px;
-      background-color: white;
-      color: #000;
+    /* LEVEL CIRCLE */
+    .level-circle {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #6E8CFB, #4a68e8);
+      color: white;
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 18px;
-      margin-right: 15px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
 
-    .profile-info {
-      line-height: 1.1;
-      font-size: 14px;
+    /* DETAILS */
+    .profile-details {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+      width: 100%;
     }
 
-    .profile-info b {
-      font-size: 15px;
+    .profile-name {
+      font-weight: 800;
+      font-size: 16px;
     }
+
+    .profile-title {
+      font-size: 13px;
+      opacity: 0.75;
+      margin-top: -3px;
+    }
+
+    /* XP BAR */
+    .xp-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 6px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .xp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6E8CFB, #4a68e8);
+      border-radius: 6px;
+      transition: width 0.3s ease;
+    }
+
+    .xp-text {
+      font-size: 11px;
+      margin-top: 4px;
+      opacity: 0.85;
+    }
+
+    /* Logout Button */
+    .logout-wrapper {
+      margin-top: 8px;
+    }
+
+    .logout-btn {
+      display: inline-block;
+      padding: 6px 14px;
+      background-color: #ff4d4d;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 12px;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background-color: #ff2b2b;
+    }
+
 
     /* Logo */
     .logo {
@@ -91,7 +148,7 @@
       border-radius: 12px;
       padding: 15px 40px;
       width: 260px;
-      margin: 10px 0; /* jarak antar tombol */
+      margin: 10px 0;
       transition: all 0.3s ease;
       font-size: 18px;
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
@@ -104,127 +161,66 @@
       color: white;
     }
 
-    /* Container tombol: ubah jadi kolom vertikal */
     .menu-container {
       display: flex;
-      flex-direction: column; /* tombol disusun vertikal */
+      flex-direction: column;
       align-items: center;
       text-align: center;
     }
 
-    /* BOX PROFIL */
-    .profile-box {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        background: rgba(255, 255, 255, 0.35);
-        backdrop-filter: blur(10px);
-        border-radius: 18px;
-        padding: 14px 18px;
-        display: flex;
-        align-items: center;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        color: #000;
-        min-width: 230px;
-    }
-
-    /* LINGKARAN LEVEL */
-    .level-circle {
-        width: 45px;
-        height: 45px;
-        background: #6E8CFB;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: 800;
-        font-size: 18px;
-        margin-right: 14px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-    }
-
-    /* DETAILS */
-    .profile-details {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.1;
-    }
-
-    .profile-name {
-        font-weight: 700;
-        font-size: 16px;
-    }
-
-    .profile-title {
-        font-size: 13px;
-        opacity: 0.75;
-        margin-top: 2px;
-    }
-
-    /* XP BAR */
-    .xp-container {
-        width: 150px;
-        height: 8px;
-        background: rgba(255,255,255,0.6);
-        border-radius: 6px;
-        margin-top: 8px;
-        overflow: hidden;
-    }
-
-    .xp-fill {
-        height: 100%;
-        background: #6E8CFB;
-        border-radius: 6px;
-        transition: width 0.3s ease;
-    }
-
-    .xp-text {
-        font-size: 11px;
-        margin-top: 4px;
-        opacity: 0.85;
-    }
-
-    /* Responsif */
     @media (max-width: 768px) {
       .logo {
         width: 250px;
       }
+
       .menu-button {
         width: 200px;
         font-size: 16px;
       }
     }
-
   </style>
 </head>
+
 <body>
 
   <div class="background"></div>
-  
+
+  <!-- PROFILE BOX -->
   <div class="profile-box">
+    <div class="level-circle">
+      {{ profile.level }}
+    </div>
 
-      <div class="level-circle">
-          1
+    <div class="profile-details">
+
+      <div class="profile-name">
+        {{ request.user.username }}
       </div>
 
-      <div class="profile-details">
-          <div class="profile-name">Akhmad Rizki Rahmatullah</div>
-          <div class="profile-title">Sipaling Tanda</div>
-
-          <div class="xp-container">
-              <div class="xp-fill" style="width: 60%;"></div>
-          </div>
-
-          <div class="xp-text">60 / 100 XP</div>
+      <div class="profile-title">
+        {{ profile.rank_name }}
       </div>
 
+      <div class="xp-container">
+        <div class="xp-fill" style="width: {{ xp_percent }}%;"></div>
+      </div>
+
+
+      <div class="xp-text">
+        {{ profile.xp }} / {{ profile.max_xp }} XP
+      </div>
+      <div class="logout-wrapper">
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+      </div>
+
+
+    </div>
   </div>
 
-
-  <!-- Konten utama -->
+  <!-- KONTEN UTAMA -->
   <div class="content text-center">
     <img src="{% static 'images/logo.png' %}" alt="Logo PunctuPlay" class="logo">
+
     <div class="menu-container">
       <a href="/materi/MateriMenuBelajar/" class="btn menu-button">BELAJAR</a>
       <a href="/quiz/MenuKuis/" class="btn menu-button">KUIS</a>
@@ -233,4 +229,5 @@
   </div>
 
 </body>
+
 </html>

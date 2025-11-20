@@ -10,4 +10,5 @@ urlpatterns = [
     path('Pilgan/', views.Pilgan, name='pilgan'),
     path('HasilJawaban/', views.HasilJawaban),
     path('blog/', include('blog.urls')),
+    path('logout/', views.logout_user, name='logout'),
 ]

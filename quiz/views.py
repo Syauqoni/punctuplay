@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from .models import Quiz
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
 # Create your views here.
 def BenarSalah(request):
@@ -26,3 +28,7 @@ def MenuKuis(request):
         "kuis_list": kuis_list,
         "level": level,   
     })
+
+def logout_user(request):
+    logout(request)
+    return redirect('index')

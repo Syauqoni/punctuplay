@@ -19,7 +19,6 @@
       font-family: "Poppins", sans-serif;
     }
 
-    /* Background blur */
     .background {
       position: absolute;
       top: 0;
@@ -34,11 +33,10 @@
       z-index: -1;
     }
 
-    /* Kartu form registrasi */
     .card {
       border-radius: 15px;
-      background: rgba(255, 255, 255, 0.2); /* efek semi transparan */
-      backdrop-filter: blur(12px); /* efek frosted glass */
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
       width: 100%;
       max-width: 400px;
@@ -60,6 +58,7 @@
 
     .form-label {
       font-weight: 600;
+      color: white;
     }
 
     a {
@@ -74,10 +73,8 @@
 </head>
 <body>
 
-  <!-- Background blur -->
   <div class="background"></div>
 
-  <!-- Konten utama -->
   <div class="card shadow">
     <h3 class="text-center mb-3 text-white fw-bold">Registrasi</h3>
 
@@ -89,30 +86,33 @@
       </div>
     {% endif %}
 
-    <form>
+    <!-- FORM PERBAIKAN -->
+    <form method="POST">
+      {% csrf_token %}
+
       <div class="mb-3">
-        <label for="name" class="form-label text-white">Nama</label>
-        <input type="text" class="form-control" id="name" name="name" required autofocus>
+        <label class="form-label text-white">Nama</label>
+        <input type="text" class="form-control" name="name" required>
       </div>
 
       <div class="mb-3">
-        <label for="username" class="form-label text-white">Username</label>
-        <input type="text" class="form-control" id="username" name="username" required>
+        <label class="form-label text-white">Username</label>
+        <input type="text" class="form-control" name="username" required>
       </div>
 
       <div class="mb-3">
-        <label for="email" class="form-label text-white">Email</label>
-        <input type="email" class="form-control" id="email" name="email" required>
+        <label class="form-label text-white">Email</label>
+        <input type="email" class="form-control" name="email" required>
       </div>
 
       <div class="mb-3">
-        <label for="password" class="form-label text-white">Kata Sandi</label>
-        <input type="password" class="form-control" id="password" name="password" required>
+        <label class="form-label text-white">Kata Sandi</label>
+        <input type="password" class="form-control" name="password" required>
       </div>
 
       <div class="mb-3">
-        <label for="password_confirmation" class="form-label text-white">Konfirmasi Kata Sandi</label>
-        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+        <label class="form-label text-white">Konfirmasi Kata Sandi</label>
+        <input type="password" class="form-control" name="password_confirmation" required>
       </div>
 
       <button type="submit" class="btn btn-custom w-100">Daftar</button>
