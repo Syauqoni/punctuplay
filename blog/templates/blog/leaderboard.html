@@ -55,7 +55,6 @@
             font-size: 22px;
             font-weight: bold;
             margin-bottom: 20px;
-        
         }
 
         .header {
@@ -115,22 +114,17 @@
                 <span class="col-right">SKOR</span>
             </div>
 
+            {% for player in players %}
             <div class="row">
-                <span class="col-left">Player 1</span>
-                <span class="col-right">1500</span>
+                <span class="col-left">{{ player.user.username }}</span>
+                <span class="col-right">{{ player.score }}</span>
             </div>
+            {% empty %}
             <div class="row">
-                <span class="col-left">Player 2</span>
-                <span class="col-right">1200</span>
+                <span class="col-left">Belum ada pemain</span>
+                <span class="col-right">0</span>
             </div>
-            <div class="row">
-                <span class="col-left">Player 3</span>
-                <span class="col-right">1000</span>
-            </div>
-            <div class="row">
-                <span class="col-left">Player 4</span>
-                <span class="col-right">500</span>
-            </div>
+            {% endfor %}
 
             <a href="/blog/home" class="btn-back">Kembali Ke Halaman Utama</a>
         </div>

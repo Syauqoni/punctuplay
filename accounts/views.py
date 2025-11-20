@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.models import User
 from django.contrib import messages
+from accounts.models import UserProfile   # ← import profil
+
 
 
 def login(request):
@@ -56,3 +58,9 @@ def register(request):
         return redirect("/accounts/login/")
 
     return render(request, "accounts/register.html")
+
+def leaderboard(request):
+    # Ambil semua user diurutkan berdasarkan skor tertinggi
+    players = UserProfile.objects.order_by('-score')
+
+    return render(request, "leaderboard.html", {"players": players})
