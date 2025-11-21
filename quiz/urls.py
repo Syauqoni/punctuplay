@@ -1,14 +1,10 @@
 from django.urls import path, include
-
 from . import views
 
 urlpatterns = [
-    path('BenarSalah/', views.BenarSalah),
-    path('DragandDrop/', views.DragandDrop, name='dragandDrop'),
-    path('Isian/', views.Isian),
     path('MenuKuis/', views.MenuKuis, name='MenuKuis'),
-    path('Pilgan/', views.Pilgan, name='pilgan'),
-    path('HasilJawaban/', views.HasilJawaban),
+    path('<int:quiz_id>/soal/<int:nomor>/', views.tampil_soal, name='tampil_soal'),
+    path('HasilJawaban/', views.HasilJawaban, name='hasil_jawaban'),
     path('blog/', include('blog.urls')),
     path('logout/', views.logout_user, name='logout'),
 ]

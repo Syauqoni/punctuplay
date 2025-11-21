@@ -33,7 +33,6 @@
         position: relative;
     }
 
-
     .question {
       background: #7289da;
       padding: 25px;
@@ -74,30 +73,6 @@
       border-color: #ffffff;
     }
 
-    .progress-bar {
-        position: absolute;
-        top: 20px;
-        width: 90%;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
-        height: 14px;
-        background-color: #e3e3e3;
-        margin: 20px auto 10px auto;
-        border-radius: 10px;
-        overflow: hidden;
-        margin-bottom: 25px;
-        margin-top: 10px;
-        height: 20px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background-color: #4b4bce;
-      border-radius: 10px;
-      transition: width 0.4s ease;
-    }
-
     .btn-berikutnya {
         position: absolute;
         background-color: #ffffff;
@@ -113,60 +88,92 @@
         border: 3px solid #5a6cff;
     }
 
-    /* Sementara */
     .btn-berikutnya a {
         color: black;
         transition: 0.3s ease;
         text-decoration: none;
     }
 
-    .btn-berikutnya a:hover {
-        color: white;
-        text-decoration: none;
-    }
-    
     .btn-berikutnya:hover {
         background-color: rgba(99, 128, 255, 0.95);
         border: 3px solid #ffffff;
         color: white;
     }
+
   </style>
 </head>
 <body>
+
+  {% include "quiz/progress.html" with progress=progress %}
   
-  {% include "quiz/progress.html" with progress=20 %}
-
   <div class="quiz-container">
-
-
+  
+    <!-- Pertanyaan dari database -->
     <div class="question">
-      <p><strong>Dia sedang belajar menggunakan Microsoft Word.</strong></p>
-      <p>Manakah penulisan yang benar?</p>
+        <p><strong>{{ soal.pertanyaan|safe }}</strong></p>
+        <p>Pilih jawaban yang benar:</p>
     </div>
 
+    <!-- Jawaban -->
     <div class="answers">
-      <button class="answer-btn">Dia sedang belajar menggunakan <strong>Microsoft Word</strong></button>
-      <button class="answer-btn">Dia sedang belajar menggunakan <em>Microsoft Word</em></button>
-      <button class="answer-btn"><em>Dia sedang belajar menggunakan Microsoft Word</em></button>
-      <button class="answer-btn">Dia sedang belajar menggunakan Microsoft Word</button>
+
+        {% if soal.opsi_a %}
+        <button class="answer-btn" data-value="A">{{ soal.opsi_a|safe }}</button>
+        {% endif %}
+
+        {% if soal.opsi_b %}
+        <button class="answer-btn" data-value="B">{{ soal.opsi_b|safe }}</button>
+        {% endif %}
+
+        {% if soal.opsi_c %}
+        <button class="answer-btn" data-value="C">{{ soal.opsi_c|safe }}</button>
+        {% endif %}
+
+        {% if soal.opsi_d %}
+        <button class="answer-btn" data-value="D">{{ soal.opsi_d|safe }}</button>
+        {% endif %}
+
     </div>
-</div>
-<button type="submit" class="btn btn-berikutnya"><a href="/quiz/DragandDrop">Berikutnya ➜</a></button>
 
-  <script>
-    const buttons = document.querySelectorAll(".answer-btn");
+    
+  </div>
+  
+  <a id="nextBtn" class="btn btn-berikutnya disabled" href="{{ next_url }}">
+      Berikutnya ➜
+  </a>
 
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        if (btn.classList.contains("active")) {
-          btn.classList.remove("active");
-        } else {
-          buttons.forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-        }
-      });
+<script>
+const buttons = document.querySelectorAll(".answer-btn");
+const nextBtn = document.getElementById("nextBtn");
+
+buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+
+        // hilangkan pilihan sebelumnya
+        buttons.forEach(b => b.classList.remove("active"));
+
+        // tandai tombol yg dipilih
+        btn.classList.add("active");
+
+        // aktifkan tombol berikutnya
+        nextBtn.classList.remove("disabled");
     });
-  </script>
+});
+</script>
+
+<style>
+    .answer-btn.active {
+        background-color: #5a6cff;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .btn-berikutnya.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+</style>
 
 </body>
+
 </html>

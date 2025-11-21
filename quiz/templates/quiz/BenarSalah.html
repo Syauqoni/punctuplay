@@ -21,19 +21,18 @@
       backdrop-filter: blur(3px);
     }
 
-.quiz-container {
-    background: rgba(90, 120, 255, 0.85);     
-    border-radius: 16px;                         
-    padding: 60px 50px;                           
-    width: 95%;
-    max-width: 1100px;
-    min-height: 250px;
-    text-align: center;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);    
-    border: 3px solid rgba(255, 255, 255, 0.7);   
-    position: relative;
-}
-
+    .quiz-container {
+        background: rgba(90, 120, 255, 0.85);
+        border-radius: 16px;
+        padding: 60px 50px;
+        width: 95%;
+        max-width: 1100px;
+        min-height: 250px;
+        text-align: center;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border: 3px solid rgba(255, 255, 255, 0.7);
+        position: relative;
+    }
 
     .question {
       background: #7289da;
@@ -56,6 +55,7 @@
       transition: all 0.3s ease;
       min-width: 180px;
       min-height: 100px;
+      cursor: pointer;
     }
 
     .btn-option:hover {
@@ -71,100 +71,79 @@
     }
 
     .btn-berikutnya {
-      position: absolute;
-      background-color: #ffffff;
-      bottom: 25px;
-      right: 30px;
-      border: none;
-      border-radius: 30px;
-      padding: 10px 25px;
-      font-weight: 600;
-      color: #333;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      border: 3px solid #5a6cff;
-      transition: 0.3s ease;
-    }
-
-    /* Sementara */
-    .btn-berikutnya a {
-        color: black;
-        transition: 0.3s ease;
-        text-decoration: none;
-    }
-
-    .btn-berikutnya a:hover {
-        color: white;
-        text-decoration: none;
-    }
-
-    .btn-berikutnya:hover {
-      background-color: rgba(99, 128, 255, 0.95);
-      border: 3px solid #ffffff;
-      color: white;
-    }
-
-    .progress-bar {
         position: absolute;
-        top: 20px;
-        width: 90%;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
-        height: 14px;
-        background-color: #e3e3e3;
-        margin: 20px auto 10px auto;
-        border-radius: 10px;
-        overflow: hidden;
-        margin-bottom: 25px;
-        margin-top: 10px;
-        height: 20px;
+        bottom: 25px;
+        right: 30px;
+        border-radius: 30px;
+        padding: 10px 25px;
+        color: #ffffff;
+        font-weight: 600;
+        border: 3px solid #ffffff;
+        text-decoration: none;
+        transition: 0.3s ease;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .btn-berikutnya.active {
+        opacity: 1;
+        pointer-events: auto;
+        border: 3px solid #5a6cff;
+        background: #ffffff;
+        color: black;
     }
     
-    .progress-fill {
-        height: 100%;
-        background-color: #4b4bce;
-        border-radius: 10px;
-        transition: width 0.4s ease;
+    .btn-berikutnya:hover {
+        background-color: rgba(99, 128, 255, 0.95);
+        border: 3px solid #ffffff;
+        color: white;
     }
 
   </style>
 </head>
 <body>
   
-  {% include "quiz/progress.html" with progress=90 %}
-
+  {% include "quiz/progress.html" with progress=progress %}
+  
   <div class="quiz-container">
-
-
     <div class="question">
-      <p><strong>Microsoft Word digunakan untuk mengolah teks,</strong></p>
-      <p>Apakah tanda baca tersebut benar atau salah?</p>
+        <p><strong>{{ soal.pertanyaan }}</strong></p>
+        <p>Pilih apakah pernyataan ini benar atau salah:</p>
     </div>
 
-    <form>
-      <div class="d-flex justify-content-center gap-5 flex-wrap">
+    <!-- Pilihan BENAR/SALAH -->
+    <div class="d-flex justify-content-center gap-5 flex-wrap">
         <button type="button" class="btn-option" data-value="1">BENAR</button>
         <button type="button" class="btn-option" data-value="0">SALAH</button>
-      </div>
-    </form>
-</div>
+    </div>
 
-<button type="submit" class="btn btn-berikutnya"><a href="/quiz/HasilJawaban">Berikutnya ➜</a></button>
+    
+    <!-- Hidden input untuk menyimpan jawaban -->
+    <input type="hidden" id="jawaban-input" name="jawaban">
+  </div>
+  <!-- Tombol Berikutnya -->
+  <a id="btnNext" href="{{ next_url }}" class="btn-berikutnya">Berikutnya ➜</a>
+  
+<script>
+const buttons = document.querySelectorAll(".btn-option");
+const btnNext = document.getElementById("btnNext");
+const inputJawaban = document.getElementById("jawaban-input");
 
-  <script>
-    const buttons = document.querySelectorAll(".btn-option");
+buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        // hapus active dari semua tombol
+        buttons.forEach(b => b.classList.remove("active"));
+        // tandai tombol yang dipilih
+        btn.classList.add("active");
 
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        if (btn.classList.contains("active")) {
-          btn.classList.remove("active");
-        } else {
-          buttons.forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-        }
-      });
+        // simpan jawaban ke hidden input
+        inputJawaban.value = btn.dataset.value;
+
+        // aktifkan tombol berikutnya
+        btnNext.classList.add("active");
     });
-  </script>
+});
+</script>
 
 </body>
 </html>

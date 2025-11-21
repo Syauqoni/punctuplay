@@ -11,10 +11,7 @@
             margin: 0;
             padding: 0;
             font-family: "Poppins", sans-serif;
-            overflow-y: auto;
             overflow-x: hidden;
-            height: 100vh;
-            background-color: #f4f4f4;
         }
 
         .background {
@@ -26,8 +23,7 @@
             background-image: url("{% static 'images/background.png' %}");
             background-size: cover;
             background-position: center;
-            filter: blur(8px);
-            transform: scale(1.1);
+            filter: blur(10px);
             z-index: -1;
         }
 
@@ -37,8 +33,6 @@
             align-items: center;
             padding: 60px 20px 80px;
             text-align: center;
-            position: relative;
-            z-index: 1;
         }
 
         .title {
@@ -52,75 +46,71 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 25px;
-            width: 90%;
-            max-width: 1400px;
+        .level-buttons a {
+            background:#5a6cff; 
+            color:white; 
+            padding:10px 25px; 
+            border-radius:10px; 
+            margin:5px; 
+            text-decoration:none; 
+            font-weight:600;
+            display: inline-block;
         }
 
-        /* Tinggi default card */
+        .level-buttons a.active {
+            background: #3f48ff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.4);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 25px;
+            width: 90%;
+            max-width: 1200px;
+            margin-top: 30px;
+        }
+
         .card {
             background-color: rgba(93, 110, 255, 0.9);
             border-radius: 16px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: white;
+            transition: 0.3s ease;
+            height: 240px;
             display: flex;
             flex-direction: column;
-            height: 240px;
-            text-decoration: none;
-        }
-
-        .level-1 .card {
-            height: 230px;
-        }
-
-        .level-2 .card {
-            height: 270px; 
-        }
-
-        .level-3 .card {
-            height: 300px; /
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
         .card-top {
-            background-color: rgba(140, 155, 255, 0.6);
             height: 150px;
+            background: rgba(140, 155, 255, 0.6);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
         }
 
         .card-top img {
-            max-width: 90%;
-            max-height: 130px;
+            max-width: 100%;
+            max-height: 140px;
             object-fit: contain;
-            transition: 0.3s ease;
-            border-radius: 12px;
-        }
-
-        .card:hover .card-top img {
-            transform: scale(1.05);
         }
 
         .card-title {
             background-color: #5a6cff;
-            color: white;
             padding: 12px;
+            min-height: 80px;
             font-weight: 600;
-            font-size: 16px;
-            height: 80px;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
 
         .btn-home {
@@ -139,29 +129,11 @@
             text-decoration: none;
             font-size: 22px;
             transition: 0.3s;
-            z-index: 2;
+            z-index: 99;
         }
 
         .btn-home:hover {
             background-color: #6d7bff;
-        }
-
-        /* Responsif */
-        @media (max-width: 1200px) {
-            .grid { grid-template-columns: repeat(4, 1fr); }
-        }
-
-        @media (max-width: 900px) {
-            .grid { grid-template-columns: repeat(3, 1fr); }
-        }
-
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: repeat(2, 1fr); }
-            .title { font-size: 20px; padding: 10px 25px; }
-        }
-
-        @media (max-width: 400px) {
-            .grid { grid-template-columns: 1fr; }
         }
 
     </style>
@@ -173,34 +145,34 @@
     <a href="/blog/home" class="btn-home">🏠</a>
 
     <div class="container">
-    <div class="title">PILIH TOPIK KUIS</div>
 
-    <div class="level-container" style="margin-bottom: 30px; text-align:center;">
-        <a href="?level=1" style="background:#5a6cff; color:white; padding:10px 25px; border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
-            LEVEL 1
-        </a>
-        <a href="?level=2" style="background:#5a6cff; color:white; padding:10px 25px; border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
-            LEVEL 2
-        </a>
-        <a href="?level=3" style="background:#5a6cff; color:white; padding:10px 25px; border-radius:10px; margin:5px; text-decoration:none; font-weight:600;">
-            LEVEL 3
-        </a>
-    </div>
+        <div class="title">PILIH TOPIK KUIS</div>
 
-        <div class="grid level-{{ level }}">
+        <!-- LEVEL SELECTOR -->
+        <div class="level-buttons">
+            <a href="?level=1" class="{% if level == 1 %}active{% endif %}">LEVEL 1</a>
+            <a href="?level=2" class="{% if level == 2 %}active{% endif %}">LEVEL 2</a>
+            <a href="?level=3" class="{% if level == 3 %}active{% endif %}">LEVEL 3</a>
+        </div>
+
+        <!-- GRID KUIS -->
+        <div class="grid">
             {% for item in kuis_list %}
-            <a href="{% url 'pilgan'%}" class="card">
+            <a href="{% url 'tampil_soal' item.id 1 %}" class="card">
                 <div class="card-top">
                     {% if item.gambar %}
                         <img src="{% static item.gambar %}" alt="{{ item.judul }}">
                     {% else %}
-                        <img src="{% static 'images/AssetKuis/' %}{{ item.gambar }}" alt="{{ item.judul }}">
+                        <img src="{% static 'images/AssetKuis/default.png' %}">
                     {% endif %}
                 </div>
-                <div class="card-title">{{ item.judul }}</div>
+
+                <div class="card-title">
+                    {{ item.judul }}
+                </div>
             </a>
             {% empty %}
-            <p style="color:white;">Belum ada data kuis.</p>
+                <p style="color:white;">Belum ada data kuis.</p>
             {% endfor %}
         </div>
 
