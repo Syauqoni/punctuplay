@@ -70,27 +70,26 @@
       border-color: #ffffff;
     }
 
+    .btn-berikutnya.disabled {
+  
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
     .btn-berikutnya {
         position: absolute;
         bottom: 25px;
         right: 30px;
         border-radius: 30px;
         padding: 10px 25px;
-        color: #ffffff;
+        color: #000000;
         font-weight: 600;
-        border: 3px solid #ffffff;
+        background: #ffffff;
+        border: 3px solid #384aff;
         text-decoration: none;
         transition: 0.3s ease;
-        opacity: 0.5;
-        pointer-events: none;
-    }
-
-    .btn-berikutnya.active {
         opacity: 1;
         pointer-events: auto;
-        border: 3px solid #5a6cff;
-        background: #ffffff;
-        color: black;
     }
     
     .btn-berikutnya:hover {
@@ -102,48 +101,62 @@
   </style>
 </head>
 <body>
-  
+
   {% include "quiz/progress.html" with progress=progress %}
-  
+
   <div class="quiz-container">
+
     <div class="question">
-        <p><strong>{{ soal.pertanyaan }}</strong></p>
+        <p><strong>{{ soal.pertanyaan|safe }}</strong></p>
         <p>Pilih apakah pernyataan ini benar atau salah:</p>
     </div>
 
-    <!-- Pilihan BENAR/SALAH -->
     <div class="d-flex justify-content-center gap-5 flex-wrap">
         <button type="button" class="btn-option" data-value="1">BENAR</button>
         <button type="button" class="btn-option" data-value="0">SALAH</button>
     </div>
 
-    
-    <!-- Hidden input untuk menyimpan jawaban -->
-    <input type="hidden" id="jawaban-input" name="jawaban">
   </div>
-  <!-- Tombol Berikutnya -->
-  <a id="btnNext" href="{{ next_url }}" class="btn-berikutnya">Berikutnya ➜</a>
-  
+
+  <!-- FORM POST TERSEMBUNYI -->
+  <form id="answerForm" method="POST" action="{% url 'tampil_soal' quiz.id nomor %}">
+      {% csrf_token %}
+      <input type="hidden" name="jawaban" id="jawabanInput">
+  </form>
+
+  <!-- Tombol berikutnya -->
+  <a id="nextBtn" href="#" class="btn btn-berikutnya disabled">
+      Berikutnya ➜
+  </a>
+
 <script>
 const buttons = document.querySelectorAll(".btn-option");
-const btnNext = document.getElementById("btnNext");
-const inputJawaban = document.getElementById("jawaban-input");
+const nextBtn = document.getElementById("nextBtn");
+const answerForm = document.getElementById("answerForm");
+const jawabanInput = document.getElementById("jawabanInput");
 
+// Ketika user pilih BENAR/SALAH
 buttons.forEach(btn => {
     btn.addEventListener("click", () => {
-        // hapus active dari semua tombol
+
+        // hilangkan warna aktif sebelumnya
         buttons.forEach(b => b.classList.remove("active"));
-        // tandai tombol yang dipilih
         btn.classList.add("active");
 
-        // simpan jawaban ke hidden input
-        inputJawaban.value = btn.dataset.value;
+        // simpan jawaban
+        jawabanInput.value = btn.dataset.value;
 
-        // aktifkan tombol berikutnya
-        btnNext.classList.add("active");
+        // aktifkan tombol next
+        nextBtn.classList.remove("disabled");
     });
 });
-</script>
 
+// Ketika next ditekan → submit POST
+nextBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    answerForm.submit();
+});
+</script>
 </body>
+
 </html>

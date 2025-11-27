@@ -27,7 +27,6 @@ def logout_user(request):
     return redirect('index')
 
 def leaderboard(request):
-    # Ambil semua user diurutkan berdasarkan skor tertinggi
-    players = UserProfile.objects.order_by('-score')
-
+    players = UserProfile.objects.order_by('-total_poin')  # urut dari poin terbesar
     return render(request, "blog/leaderboard.html", {"players": players})
+

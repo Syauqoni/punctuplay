@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import User
+from accounts.models import UserProfile   # PENTING agar tidak bentrok
+
 
 class Quiz(models.Model):
     judul = models.CharField(max_length=200)
@@ -18,33 +21,71 @@ class Soal(models.Model):
     ]
 
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="soal")
-
-    # Tipe soal
     tipe = models.CharField(max_length=20, choices=TIPE_SOAL)
-
-    # Urutan soal (biar kamu bisa atur sendiri urutannya)
     urutan = models.IntegerField(default=1)
-
-    # Pertanyaan utama
     pertanyaan = models.TextField()
 
-    # PILIHAN GANDA
+    # Pilgan
     opsi_a = models.CharField(max_length=255, blank=True, null=True)
     opsi_b = models.CharField(max_length=255, blank=True, null=True)
     opsi_c = models.CharField(max_length=255, blank=True, null=True)
     opsi_d = models.CharField(max_length=255, blank=True, null=True)
 
-    # DRAG & DROP → contoh: [",", ",", ".", "!"]
+    # Drag & Drop
     jawaban_drag = models.JSONField(blank=True, null=True)
 
-    # ISIAN → contoh: [" , ", " . ", "!"]
+    # Isian
     jawaban_isian = models.JSONField(blank=True, null=True)
 
-    # BENAR / SALAH → True / False
+    # Benar / Salah
     jawaban_benarsalah = models.BooleanField(blank=True, null=True)
 
-    # Untuk pilihan ganda → "A", "B", "C", "D"
+    # Kunci jawaban umum
     jawaban_benar = models.CharField(max_length=255, blank=True, null=True)
 
+    # Tambahan penting
+    poin = models.IntegerField(default=10)  # poin untuk leaderboard
+    penjelasan = models.TextField(blank=True, null=True)  # alasan jawaban benar
+
     def __str__(self):
-        return f"{self.urutan}. ({self.tipe}) {self.pertanyaan[:40]}"
+        return f"{self.urutan}. {self.pertanyaan[:40]}"
+
+
+class UserJawaban(models.Model):
+    """Simpan jawaban user untuk setiap soal"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    soal = models.ForeignKey(Soal, on_delete=models.CASCADE)
+    jawaban_user = models.TextField()
+
+    benar = models.BooleanField(default=False)
+    xp_didapat = models.IntegerField(default=0)
+    poin_didapat = models.IntegerField(default=0)
+
+    waktu = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - Soal {self.soal.id}"
+
+
+class ProgressQuiz(models.Model):
+    """Progress user dalam 1 kuis"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+
+    total_benar = models.IntegerField(default=0)
+    total_salah = models.IntegerField(default=0)
+    xp_total = models.IntegerField(default=0)
+    selesai = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.quiz.judul}"
+
+
+class Lencana(models.Model):
+    """Lencana sesuai total XP atau pencapaian"""
+    nama = models.CharField(max_length=100)
+    deskripsi = models.TextField(blank=True, null=True)
+    xp_minimal = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.nama

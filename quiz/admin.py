@@ -21,4 +21,4 @@ class QuizAdmin(admin.ModelAdmin):
 
 @admin.register(Soal)
 class SoalAdmin(admin.ModelAdmin):
-    list_display = ('pertanyaan', 'tipe', 'quiz')
+    list_display = ('pertanyaan','urutan', 'tipe', 'quiz')

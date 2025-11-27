@@ -20,10 +20,6 @@
       padding: 40px 0;
     }
 
-    h1, h4, h5 {
-      color: #ffffff;
-    }
-
     .container {
       background-color: rgba(93, 110, 255, 0.9);
       border-radius: 20px;
@@ -34,14 +30,14 @@
     }
 
     .btn-leaderboard {
-        background-color: #5a6cff;
-        color: #ffffff;
-        font-weight: bold;
-        border: 3px solid #ffffff;
-        border-radius: 10px;
-        padding: 10px 25px;
-        transition: 0.3s ease;
-        box-shadow: 0 0 6px rgba(255, 255, 255, 0.6); 
+      background-color: #5a6cff;
+      color: #ffffff;
+      font-weight: bold;
+      border: 3px solid #ffffff;
+      border-radius: 10px;
+      padding: 10px 25px;
+      transition: 0.3s ease;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.6); 
     }
 
     .btn-leaderboard:hover {
@@ -50,7 +46,7 @@
     }
 
     .section {
-      background-color: #ffffffdd;
+      background-color: rgba(150, 169, 255, 0.85);
       border-radius: 12px;
       padding: 20px;
       margin-bottom: 20px;
@@ -68,12 +64,15 @@
     <div class="text-center mb-5">
       <h1 class="display-5">Hasil Kuis</h1>
       <p class="lead">Total Poin Anda: <strong>{{ total_poin }}</strong></p>
+
       <a href="/blog/leaderboard/" class="btn btn-leaderboard mt-3">Lihat Leaderboard</a>
     </div>
 
     <h4 class="mb-3">Penjelasan Jawaban Anda</h4>
 
-    {# --- Pilihan Ganda --- #}
+    <!-- =========================
+         PILIHAN GANDA
+    ========================== -->
     {% if pilgan %}
       <div class="section">
         <h5>Pilihan Ganda</h5>
@@ -82,7 +81,11 @@
             <li class="mb-3">
               <p><strong>Pertanyaan:</strong> {{ soal.pertanyaan }}</p>
               <p><strong>Jawaban Anda:</strong> {{ soal.jawaban_user|default:"Tidak dijawab" }}</p>
-              <p><strong>Jawaban Benar:</strong> {{ soal.jawaban }}</p>
+
+              {% if soal.jawaban_user != soal.jawaban %}
+                <p><strong>Jawaban Benar:</strong> {{ soal.jawaban_benar }}</p>
+              {% endif %}
+
               <p><strong>Penjelasan:</strong> {{ soal.penjelasan }}</p>
               <hr>
             </li>
@@ -91,7 +94,10 @@
       </div>
     {% endif %}
 
-    {# --- Drag and Drop --- #}
+
+    <!-- =========================
+         DRAG AND DROP
+    ========================== -->
     {% if drag %}
       <div class="section">
         <h5>Drag and Drop</h5>
@@ -99,14 +105,17 @@
           {% for soal in drag %}
             <li class="mb-3">
               <p><strong>Pertanyaan:</strong> {{ soal.pertanyaan }}</p>
+
               <p><strong>Urutan Anda:</strong>
                 {% if soal.urutan_user %}
-                  {{ soal.urutan_user|join:", " }}
+                  ( {{ soal.urutan_user|join:", " }}  )
                 {% else %}
                   Tidak dijawab
                 {% endif %}
               </p>
-              <p><strong>Urutan Benar:</strong> {{ soal.urutan|join:", " }}</p>
+
+              <p><strong>Urutan Benar:</strong> ( {{ soal.urutan_benar|join:", " }}  )</p>
+
               <p><strong>Penjelasan:</strong> {{ soal.penjelasan }}</p>
               <hr>
             </li>
@@ -115,37 +124,59 @@
       </div>
     {% endif %}
 
-    {# --- Benar / Salah --- #}
+
+    <!-- =========================
+        BENAR / SALAH
+    ========================== -->
     {% if benar_salah %}
       <div class="section">
         <h5>Benar / Salah</h5>
         <ol>
           {% for soal in benar_salah %}
             <li class="mb-3">
+
               <p><strong>Pernyataan:</strong> {{ soal.pertanyaan }}</p>
-              <p><strong>Jawaban Anda:</strong>
-                {% if soal.jawaban_user == '1' %}
-                  Benar
-                {% elif soal.jawaban_user == '0' %}
-                  Salah
-                {% else %}
-                  Tidak dijawab
-                {% endif %}
-              </p>
-              <p><strong>Jawaban Benar:</strong>
-                {% if soal.jawaban == '1' %}
-                  Benar
-                {% else %}
-                  Salah
-                {% endif %}
-              </p>
+
+              <p><strong>Jawaban Anda:</strong> {{ soal.jawaban_user }}</p>
+
+              <p><strong>Jawaban Benar:</strong> {{ soal.jawaban_benar }}</p>
+
               <p><strong>Penjelasan:</strong> {{ soal.penjelasan }}</p>
+
               <hr>
             </li>
           {% endfor %}
         </ol>
       </div>
     {% endif %}
+
+
+
+    <!-- =========================
+         SOAL ISIAN
+    ========================== -->
+    {% if isian %}
+      <div class="section">
+        <h5>Isian</h5>
+        <ol>
+          {% for soal in isian %}
+            <li class="mb-3">
+
+              <p><strong>Pertanyaan:</strong> {{ soal.pertanyaan }}</p>
+
+              <p><strong>Jawaban Anda:</strong> ( {{ soal.jawaban_user|default:"Tidak dijawab" }}  )</p>
+
+              <p><strong>Jawaban Benar:</strong> ( {{ soal.jawaban_isian }}  )</p>
+
+              <p><strong>Penjelasan:</strong> {{ soal.penjelasan }}</p>
+
+              <hr>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    {% endif %}
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

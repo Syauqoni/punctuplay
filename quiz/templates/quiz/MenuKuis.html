@@ -147,15 +147,13 @@
     <div class="container">
 
         <div class="title">PILIH TOPIK KUIS</div>
-
-        <!-- LEVEL SELECTOR -->
+        
         <div class="level-buttons">
             <a href="?level=1" class="{% if level == 1 %}active{% endif %}">LEVEL 1</a>
             <a href="?level=2" class="{% if level == 2 %}active{% endif %}">LEVEL 2</a>
             <a href="?level=3" class="{% if level == 3 %}active{% endif %}">LEVEL 3</a>
         </div>
 
-        <!-- GRID KUIS -->
         <div class="grid">
             {% for item in kuis_list %}
             <a href="{% url 'tampil_soal' item.id 1 %}" class="card">

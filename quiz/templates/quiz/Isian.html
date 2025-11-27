@@ -20,12 +20,11 @@
             background-position: center;
         }
 
-        /* Wrapper agar progres bar dan card tersusun vertikal */
         .quiz-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px; /* jarak antara progres bar dan card */
+            gap: 15px; 
             width: 100%;
         }
 
@@ -57,7 +56,6 @@
             padding: 5px;
         }
 
-        /* Tombol berikutnya */
         .btn-berikutnya {
             position: absolute;
             bottom: 25px;
@@ -91,44 +89,61 @@
 
 <body>
 
-    {% include "quiz/progress.html" with progress=progress %}
+{% include "quiz/progress.html" with progress=progress %}
+
+<form method="POST">
+    {% csrf_token %}
 
     <div class="card-kuis">
         <p class="soal">
             {% for part in parts %}
                 {{ part|safe }}
+
                 {% if not forloop.last %}
-                    <input type="text" 
-                           name="isian{{ forloop.counter }}" 
-                           maxlength="1" 
-                           class="isian">
+                    <input type="text"
+                           name="isian{{ forloop.counter }}"
+                           maxlength="1"
+                           class="isian"
+                           autocomplete="off">
                 {% endif %}
             {% endfor %}
         </p>
     </div>
 
-    <a id="btnNext" href="{{ next_url }}" class="btn-berikutnya">Berikutnya ➜</a>
+    <!-- Tombol submit -->
+    <button id="btnNext" type="submit" class="btn-berikutnya" disabled>
+        Berikutnya ➜
+    </button>
 
+</form>
 
 <script>
     const inputs = document.querySelectorAll(".isian");
     const btnNext = document.getElementById("btnNext");
 
-    // Daftar tanda baca yang diperbolehkan
-    const allowed = ['.', ',', '!', '?', ':', ';', '-', '—', '…', '"', "'", '(', ')', '[', ']', '{', '}', '/', '`'];
+    const allowed = ['.', ',', '!', '?', ':', ';', '-', '—', '…', '"', "'", 
+                     '(', ')', '[', ']', '{', '}', '/', '`'];
 
-    inputs.forEach(input => {
+    inputs.forEach((input, index) => {
         input.addEventListener("input", function () {
-            // Hapus jika bukan tanda baca
+
             if (!allowed.includes(this.value)) {
                 this.value = "";
+                return;
             }
+
+            if (this.value && inputs[index + 1]) {
+                inputs[index + 1].focus();
+            }
+
             checkFilled();
         });
     });
 
     function checkFilled() {
         const allFilled = Array.from(inputs).every(i => i.value.trim() !== "");
+        btnNext.disabled = !allFilled;
+
         if (allFilled) {
             btnNext.classList.add("active");
         } else {

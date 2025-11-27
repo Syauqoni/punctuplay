@@ -13,10 +13,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: "Poppins", sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background-image: url("{% static 'images/background.png' %}");
             background-size: cover;
             background-position: center;
+            backdrop-filter: blur(3px);
         }
 
         .container {
@@ -77,20 +78,26 @@
             position: absolute;
             bottom: 25px;
             right: 30px;
-            border-radius: 30px;
-            padding: 10px 25px;
+
+            padding: 10px 25px;       /* ukuran sama */
+            border-radius: 30px;      /* sama */
+            font-weight: 600;         /* sama */
+            font-size: 16px;          /* agar identik */
+            font-family: 'Segoe UI', sans-serif;
+
+            background: transparent;  /* default transparan */
             color: #ffffff;
-            font-weight: 600;
-            border: 3px solid #ffffff;
-            text-decoration: none;
-            transition: 0.3s ease;
+            border: 3px solid #ffffff;  
             opacity: 0.5;
             pointer-events: none;
+
+            transition: 0.3s ease;
         }
 
         .btn-berikutnya.active {
             opacity: 1;
             pointer-events: auto;
+            transition: 0.3s ease;
             border: 3px solid #5a6cff;
             background: #ffffff;
             color: black;
@@ -105,56 +112,102 @@
 </head>
 <body>
 
-  {% include "quiz/progress.html" with progress=progress %}
-  
-  <div class="container">
-    
-    <div class="question">
-        {% autoescape off %}
-            {{ html_pertanyaan }}
-        {% endautoescape %}
+{% include "quiz/progress.html" with progress=progress %}
+
+<!-- FORM UNTUK MENYIMPAN JAWABAN -->
+<form method="POST" action="{{ next_url }}">
+    {% csrf_token %}
+
+    <div class="container">
+
+        <div class="question">
+            {% autoescape off %}
+                {{ html_pertanyaan }}
+            {% endautoescape %}
+        </div>
+
+        <div class="options" id="optionBox">
+            {% for item in drag_items %}
+                <div class="option" draggable="true" data-value="{{ item }}">{{ item }}</div>
+            {% endfor %}
+        </div>
+
     </div>
 
-    <div class="options" id="optionBox">
-        {% for item in drag_items %}
-            <div class="option" draggable="true" data-value="{{ item }}">{{ item }}</div>
-        {% endfor %}
-    </div>
-</div>
+    <!-- Hidden input untuk simpan jawaban -->
+    <input type="hidden" name="jawaban" id="jawabanInput">
 
-<a id="btnNext" href="{{ next_url }}" class="btn-berikutnya">Berikutnya ➜</a>
+    <!-- Tombol: tampilannya sama seperti versi <a> -->
+    <button id="btnNext" type="submit" class="btn-berikutnya">Berikutnya ➜</button>
+</form>
+
 
 <script>
 let dragged = null;
 const dropSlots = document.querySelectorAll(".drop-slot");
 const btnNext = document.getElementById("btnNext");
+const optionBox = document.getElementById("optionBox");
+const jawabanInput = document.getElementById("jawabanInput");
 
-// Drag start
+// Event drag start
 document.querySelectorAll(".option").forEach(opt => {
-    opt.addEventListener("dragstart", () => dragged = opt);
-});
-
-// Drop event
-dropSlots.forEach(slot => {
-    slot.addEventListener("dragover", e => e.preventDefault());
-    slot.addEventListener("drop", e => {
-        e.preventDefault();
-        if (dragged) {
-            slot.textContent = dragged.dataset.value;
-            dragged.remove();
-            dragged = null;
-            checkAllSlotsFilled();
-        }
+    opt.addEventListener("dragstart", () => {
+        dragged = opt;
     });
 });
 
-// Cek semua slot sudah terisi
+// Slot menerima drop
+dropSlots.forEach(slot => {
+    slot.addEventListener("dragover", e => e.preventDefault());
+
+    slot.addEventListener("drop", e => {
+        e.preventDefault();
+        if (!dragged) return;
+
+        // Jika slot sudah terisi, kembalikan isinya ke daftar option
+        if (slot.dataset.filled === "true") {
+            const oldValue = slot.textContent.trim();
+
+            let newOpt = document.createElement("div");
+            newOpt.classList.add("option");
+            newOpt.setAttribute("draggable", "true");
+            newOpt.dataset.value = oldValue;
+            newOpt.textContent = oldValue;
+
+            newOpt.addEventListener("dragstart", () => dragged = newOpt);
+
+            optionBox.appendChild(newOpt);
+        }
+
+        // Isi slot dengan nilai baru
+        slot.textContent = dragged.dataset.value;
+        slot.dataset.filled = "true";
+
+        // Hapus opsi dari list
+        dragged.remove();
+        dragged = null;
+
+        updateJawaban();
+        checkAllSlotsFilled();
+    });
+});
+
+// SIMPAN JAWABAN KE INPUT TERSEMBUNYI
+function updateJawaban() {
+    const arr = Array.from(dropSlots).map(slot => slot.textContent.trim());
+    jawabanInput.value = arr.join(",");
+}
+
+// CEK JIKA SEMUA SLOT SUDAH TERISI
 function checkAllSlotsFilled() {
-    const allFilled = Array.from(dropSlots).every(slot => slot.textContent.trim() !== "");
+    const allFilled = Array.from(dropSlots).every(slot => slot.dataset.filled === "true");
+
     if (allFilled) {
         btnNext.classList.add("active");
+        btnNext.disabled = false;
     } else {
         btnNext.classList.remove("active");
+        btnNext.disabled = true;
     }
 }
 </script>

@@ -108,56 +108,84 @@
   
   <div class="quiz-container">
   
-    <!-- Pertanyaan dari database -->
     <div class="question">
         <p><strong>{{ soal.pertanyaan|safe }}</strong></p>
         <p>Pilih jawaban yang benar:</p>
     </div>
 
-    <!-- Jawaban -->
     <div class="answers">
 
         {% if soal.opsi_a %}
-        <button class="answer-btn" data-value="A">{{ soal.opsi_a|safe }}</button>
+        {% with teks=soal.opsi_a|striptags %}
+        <button class="answer-btn" data-value="A" data-text="{{ teks|slice:'3:' }}">
+            {{ teks }}
+        </button>
+        {% endwith %}
         {% endif %}
 
         {% if soal.opsi_b %}
-        <button class="answer-btn" data-value="B">{{ soal.opsi_b|safe }}</button>
+        {% with teks=soal.opsi_b|striptags %}
+        <button class="answer-btn" data-value="B" data-text="{{ teks|slice:'3:' }}">
+            {{ teks }}
+        </button>
+        {% endwith %}
         {% endif %}
 
         {% if soal.opsi_c %}
-        <button class="answer-btn" data-value="C">{{ soal.opsi_c|safe }}</button>
+        {% with teks=soal.opsi_c|striptags %}
+        <button class="answer-btn" data-value="C" data-text="{{ teks|slice:'3:' }}">
+            {{ teks }}
+        </button>
+        {% endwith %}
         {% endif %}
 
         {% if soal.opsi_d %}
-        <button class="answer-btn" data-value="D">{{ soal.opsi_d|safe }}</button>
+        {% with teks=soal.opsi_d|striptags %}
+        <button class="answer-btn" data-value="D" data-text="{{ teks|slice:'3:' }}">
+            {{ teks }}
+        </button>
+        {% endwith %}
         {% endif %}
-
     </div>
 
-    
   </div>
+
+  <!-- Form POST tersembunyi yang dipakai untuk mengirim jawaban -->
+  <form id="answerForm" method="POST" style="display: none;">
+      {% csrf_token %}
+      <input type="hidden" name="jawaban" id="jawabanInput">
+  </form>
   
-  <a id="nextBtn" class="btn btn-berikutnya disabled" href="{{ next_url }}">
+  <a id="nextBtn" class="btn btn-berikutnya disabled">
       Berikutnya ➜
   </a>
 
 <script>
 const buttons = document.querySelectorAll(".answer-btn");
 const nextBtn = document.getElementById("nextBtn");
+const answerForm = document.getElementById("answerForm");
+const jawabanInput = document.getElementById("jawabanInput");
 
 buttons.forEach(btn => {
     btn.addEventListener("click", () => {
 
-        // hilangkan pilihan sebelumnya
+        // highlight jawaban
         buttons.forEach(b => b.classList.remove("active"));
-
-        // tandai tombol yg dipilih
         btn.classList.add("active");
 
-        // aktifkan tombol berikutnya
+        // simpan jawaban yang dipilih
+        jawabanInput.value = btn.dataset.value + ". " + btn.dataset.text;
+
+        // aktifkan tombol next
         nextBtn.classList.remove("disabled");
     });
+});
+
+// Ketika Next ditekan, kirim POST
+nextBtn.addEventListener("click", function (e) {
+    if (!nextBtn.classList.contains("disabled")) {
+        answerForm.submit();
+    }
 });
 </script>
 
@@ -173,7 +201,5 @@ buttons.forEach(btn => {
         opacity: 0.5;
     }
 </style>
-
 </body>
-
 </html>
