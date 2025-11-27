@@ -219,15 +219,34 @@ def HasilJawaban(request, quiz_id):
     user=request.user,
     quiz=quiz,
     )
+
+    selisih_poin = total_poin - riwayat.skor
     
     if total_poin > riwayat.skor:
         riwayat.skor = total_poin
         riwayat.save()
 
-    total_poin_leaderboard = RiwayatKuis.objects.filter(user=request.user).aggregate(Sum('skor'))['skor__sum'] or 0
+    # total_poin_leaderboard = RiwayatKuis.objects.filter(user=request.user).aggregate(Sum('skor'))['skor__sum'] or 0
 
     profile = UserProfile.objects.get(user=request.user)
-    profile.total_poin = total_poin_leaderboard
+
+    if selisih_poin > 0:
+        profile.add_xp(selisih_poin)
+        # profile.total_poin = total_poin_leaderboard
+        # profile.add_poin(total_poin_leaderboard - profile.total_poin)
+        profile.add_poin(selisih_poin)
+        profile.update_rank()
+
+        # while profile.xp >= profile.max_xp and profile.level < 15000:
+        #     profile.xp -= profile.max_xp
+        #     profile.level += 1
+        #     profile.max_xp += 300  # max XP meningkat tiap full
+        #     if profile.level > 15000:
+        #         profile.level = 15000
+        #         profile.xp = profile.max_xp
+        #         break
+
+    # profile.total_poin = total_poin_leaderboard
     profile.save()
 
     return render(request, "quiz/HasilJawaban.html", {

@@ -10,25 +10,44 @@ class UserProfile(models.Model):
     # Sistem XP & Level
     level = models.IntegerField(default=1)
     xp = models.IntegerField(default=0)
-    max_xp = models.IntegerField(default=100)   # XP penuh sebelum naik level
+    max_xp = models.IntegerField(default=300)   # XP penuh sebelum naik level
 
     # Sistem poin untuk leaderboard
     total_poin = models.IntegerField(default=0)
 
     # Rank / lencana teks
-    rank_name = models.CharField(max_length=100, default="Pemula")
+    rank_name = models.CharField(max_length=100, default="Pemula tanda baca")
 
     def add_xp(self, amount):
-        """Tambah XP sekaligus cek naik level"""
+        """Tambah XP sekaligus cek naik level, max level 15000"""
+        if self.level >= 15000:
+            return
+
         self.xp += amount
 
-        # naik level otomatis
-        while self.xp >= self.max_xp:
+        while self.xp >= self.max_xp and self.level < 15000:
             self.xp -= self.max_xp
             self.level += 1
-            self.max_xp += 25
+            # max_xp bertambah progresif: 300 → 600 → 900 …
+            self.max_xp += 300
+            if self.max_xp > 15000:
+                self.max_xp = 15000  # batas maksimum
 
         self.save()
+
+    def update_rank(self):
+        if self.level < 5:
+            self.rank_name = "Pemula tanda baca"
+        elif self.level < 10:
+            self.rank_name = "Penjelajah kalimat"
+        elif self.level < 50:
+            self.rank_name = "Ahli tanda baca dasar"
+        elif self.level < 200:
+            self.rank_name = "Master-nya Tanda Baca"
+        else:
+            self.rank_name = "Grandmaster Punctuplay"
+        self.save()
+
 
     def add_poin(self, poin):
         """Tambah poin untuk leaderboard"""

@@ -100,5 +100,5 @@ class RiwayatKuis(models.Model):
         unique_together = ('user', 'quiz')
 
     def __str__(self):
-        return f"{self.user.username} - {self.quiz.judul} - {self.skor_tertinggi}"
+        return f"{self.user.username} - {self.quiz.judul} - {self.skor}"
 

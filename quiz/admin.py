@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Quiz, Soal
+from .models import Quiz, Soal, RiwayatKuis  
 
 class SoalInline(admin.TabularInline):
     model = Soal
@@ -22,3 +22,7 @@ class QuizAdmin(admin.ModelAdmin):
 @admin.register(Soal)
 class SoalAdmin(admin.ModelAdmin):
     list_display = ('pertanyaan','urutan', 'tipe', 'quiz')
+
+@admin.register(RiwayatKuis)
+class RiwayatKuisAdmin(admin.ModelAdmin):
+    list_display = ('user', 'quiz', 'skor')
