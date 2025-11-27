@@ -18,15 +18,12 @@ def home(request):
         "xp_percent": xp_percent,
     }
     return render(request, "blog/home.html", context)
-
 def leaderboard(request):
-    return render(request, 'blog/leaderboard.html')
+    players = UserProfile.objects.order_by('-total_poin')  # urut dari poin terbesar
+    return render(request, "blog/leaderboard.html", {"players": players})
 
 def logout_user(request):
     logout(request)
     return redirect('index')
 
-def leaderboard(request):
-    players = UserProfile.objects.order_by('-total_poin')  # urut dari poin terbesar
-    return render(request, "blog/leaderboard.html", {"players": players})
 

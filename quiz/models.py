@@ -89,3 +89,16 @@ class Lencana(models.Model):
 
     def __str__(self):
         return self.nama
+    
+class RiwayatKuis(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    skor = models.IntegerField(default=0)   # ← UBAH NAMA FIELD AGAR SESUAI
+    terakhir_main = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'quiz')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.quiz.judul} - {self.skor_tertinggi}"
+

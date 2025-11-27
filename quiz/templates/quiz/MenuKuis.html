@@ -156,7 +156,7 @@
 
         <div class="grid">
             {% for item in kuis_list %}
-            <a href="{% url 'tampil_soal' item.id 1 %}" class="card">
+            <a href="{% url 'tampil_soal' item.id 0 %}" class="card">
                 <div class="card-top">
                     {% if item.gambar %}
                         <img src="{% static item.gambar %}" alt="{{ item.judul }}">

@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from .models import Quiz, Soal
+from .models import Quiz, Soal, RiwayatKuis
 from django.contrib.auth import logout
+from accounts.models import UserProfile
+from django.db.models import Sum
 import json
 
 # ============================================
@@ -70,7 +72,7 @@ def tampil_soal(request, quiz_id, nomor):
         if nomor + 1 < total:
             return redirect("tampil_soal", quiz_id=quiz_id, nomor=nomor + 1)
         else:
-            return redirect("hasil_jawaban")
+            return redirect("hasil_jawaban", quiz_id=quiz_id)
 
     TEMPLATE_MAP = {
         "pilgan": "quiz/Pilgan.html",
@@ -102,8 +104,9 @@ def tampil_soal(request, quiz_id, nomor):
 # ============================================
 # HASIL JAWABAN (FINAL FIX)
 # ============================================
-def HasilJawaban(request):
+def HasilJawaban(request, quiz_id):
 
+    quiz = get_object_or_404(Quiz, id=quiz_id)
     jawaban_user = request.session.get("jawaban_user", {})
     total_poin = 0
 
@@ -211,6 +214,22 @@ def HasilJawaban(request):
                 "penjelasan": s.penjelasan,
             })
 
+
+    riwayat, created = RiwayatKuis.objects.get_or_create(
+    user=request.user,
+    quiz=quiz,
+    )
+    
+    if total_poin > riwayat.skor:
+        riwayat.skor = total_poin
+        riwayat.save()
+
+    total_poin_leaderboard = RiwayatKuis.objects.filter(user=request.user).aggregate(Sum('skor'))['skor__sum'] or 0
+
+    profile = UserProfile.objects.get(user=request.user)
+    profile.total_poin = total_poin_leaderboard
+    profile.save()
+
     return render(request, "quiz/HasilJawaban.html", {
         "total_poin": total_poin,
         "pilgan": data_pilgan,
@@ -218,7 +237,6 @@ def HasilJawaban(request):
         "benar_salah": data_bs,
         "isian": data_isian,
     })
-
 
 def logout_user(request):
     logout(request)
