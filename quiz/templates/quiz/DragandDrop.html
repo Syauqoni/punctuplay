@@ -78,14 +78,12 @@
             position: absolute;
             bottom: 25px;
             right: 30px;
-
-            padding: 10px 25px;       /* ukuran sama */
-            border-radius: 30px;      /* sama */
-            font-weight: 600;         /* sama */
-            font-size: 16px;          /* agar identik */
+            padding: 10px 25px;      
+            border-radius: 30px;    
+            font-weight: 600;        
+            font-size: 16px;          
             font-family: 'Segoe UI', sans-serif;
-
-            background: transparent;  /* default transparan */
+            background: transparent; 
             color: #ffffff;
             border: 3px solid #ffffff;  
             opacity: 0.5;
@@ -134,10 +132,9 @@
 
     </div>
 
-    <!-- Hidden input untuk simpan jawaban -->
+    <!-- simpan jawaban -->
     <input type="hidden" name="jawaban" id="jawabanInput">
 
-    <!-- Tombol: tampilannya sama seperti versi <a> -->
     <button id="btnNext" type="submit" class="btn-berikutnya">Berikutnya ➜</button>
 </form>
 
@@ -179,7 +176,7 @@ dropSlots.forEach(slot => {
             optionBox.appendChild(newOpt);
         }
 
-        // Isi slot dengan nilai baru
+        // Mengganti slot dengan nilai baru
         slot.textContent = dragged.dataset.value;
         slot.dataset.filled = "true";
 
@@ -192,13 +189,13 @@ dropSlots.forEach(slot => {
     });
 });
 
-// SIMPAN JAWABAN KE INPUT TERSEMBUNYI
+// Menyimpan jawaban
 function updateJawaban() {
     const arr = Array.from(dropSlots).map(slot => slot.textContent.trim());
     jawabanInput.value = arr.join(",");
 }
 
-// CEK JIKA SEMUA SLOT SUDAH TERISI
+// Mencek apakah semua slot sdh terisi
 function checkAllSlotsFilled() {
     const allFilled = Array.from(dropSlots).every(slot => slot.dataset.filled === "true");
 

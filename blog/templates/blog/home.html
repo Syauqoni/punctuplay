@@ -21,7 +21,6 @@
       font-family: "Poppins", sans-serif;
     }
 
-    /* Background blur */
     .background {
       position: absolute;
       top: 0;
@@ -36,27 +35,25 @@
       z-index: -1;
     }
 
-    /* PROFILE BOX */
     .profile-box {
       position: absolute;
       top: 20px;
       left: 20px;
       background: rgba(255, 255, 255, 0.65);
       backdrop-filter: blur(12px);
-      border-radius: 20px;
-      padding: 15px 18px;
+      border-radius: 25px;
+      padding: 25px 28px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+      gap: 18px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
       color: #000;
-      min-width: 260px;
+      min-width: 400px;
     }
 
-    /* LEVEL CIRCLE */
     .level-circle {
-      width: 50px;
-      height: 50px;
+      width: 90px;
+      height: 65px;
       background: linear-gradient(135deg, #6E8CFB, #4a68e8);
       color: white;
       border-radius: 50%;
@@ -64,11 +61,10 @@
       justify-content: center;
       align-items: center;
       font-weight: 800;
-      font-size: 18px;
+      font-size: 22px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
 
-    /* DETAILS */
     .profile-details {
       display: flex;
       flex-direction: column;
@@ -78,16 +74,16 @@
 
     .profile-name {
       font-weight: 800;
-      font-size: 16px;
+      padding-bottom: 5%;
+      font-size: 30px;
     }
 
     .profile-title {
-      font-size: 13px;
+      font-size: 18px;
       opacity: 0.75;
       margin-top: -3px;
     }
 
-    /* XP BAR */
     .xp-container {
       width: 100%;
       height: 8px;
@@ -110,7 +106,6 @@
       opacity: 0.85;
     }
 
-    /* Logout Button */
     .logout-wrapper {
       margin-top: 8px;
     }
@@ -131,15 +126,12 @@
       background-color: #ff2b2b;
     }
 
-
-    /* Logo */
     .logo {
       width: 320px;
       height: auto;
       margin-bottom: 0px;
     }
 
-    /* Tombol menu */
     .menu-button {
       background-color: #6E8CFB;
       color: white;
@@ -185,7 +177,6 @@
 
   <div class="background"></div>
 
-  <!-- PROFILE BOX -->
   <div class="profile-box">
     <div class="level-circle">
       {{ profile.level }}
@@ -217,7 +208,6 @@
     </div>
   </div>
 
-  <!-- KONTEN UTAMA -->
   <div class="content text-center">
     <img src="{% static 'images/logo.png' %}" alt="Logo PunctuPlay" class="logo">
 

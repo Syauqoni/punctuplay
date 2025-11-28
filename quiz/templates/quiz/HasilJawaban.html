@@ -56,6 +56,21 @@
     strong {
       color: #2d403a;
     }
+
+    .total-poin {
+      font-size: 50px;     
+      color: #ffffff;     
+      font-weight: 900;    
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);  
+    }
+
+    .lead {
+      font-size: 40px;     
+      color: #ffffff;     
+      font-weight: 900;    
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);  
+    }
+
   </style>
 </head>
 <body>
@@ -63,16 +78,14 @@
   <div class="container">
     <div class="text-center mb-5">
       <h1 class="display-5">Hasil Kuis</h1>
-      <p class="lead">Total Poin Anda: <strong>{{ total_poin }}</strong></p>
+      <p class="lead">Total Poin Anda: <strong class="total-poin">{{ total_poin }}</strong></p>
 
       <a href="/blog/leaderboard/" class="btn btn-leaderboard mt-3">Lihat Leaderboard</a>
     </div>
 
     <h4 class="mb-3">Penjelasan Jawaban Anda</h4>
 
-    <!-- =========================
-         PILIHAN GANDA
-    ========================== -->
+    <!-- Soal Pilgan -->
     {% if pilgan %}
       <div class="section">
         <h5>Pilihan Ganda</h5>
@@ -95,9 +108,7 @@
     {% endif %}
 
 
-    <!-- =========================
-         DRAG AND DROP
-    ========================== -->
+    <!-- Soal Drag and Drop -->
     {% if drag %}
       <div class="section">
         <h5>Drag and Drop</h5>
@@ -125,9 +136,7 @@
     {% endif %}
 
 
-    <!-- =========================
-        BENAR / SALAH
-    ========================== -->
+  <!-- Soal Benar/Salah -->
     {% if benar_salah %}
       <div class="section">
         <h5>Benar / Salah</h5>
@@ -152,9 +161,7 @@
 
 
 
-    <!-- =========================
-         SOAL ISIAN
-    ========================== -->
+    <!-- Soal Isian -->
     {% if isian %}
       <div class="section">
         <h5>Isian</h5>

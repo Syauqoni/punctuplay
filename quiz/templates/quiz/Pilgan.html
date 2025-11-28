@@ -100,6 +100,17 @@
         color: white;
     }
 
+    .answer-btn.active {
+        background-color: #5a6cff;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .btn-berikutnya.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
   </style>
 </head>
 <body>
@@ -150,7 +161,7 @@
 
   </div>
 
-  <!-- Form POST tersembunyi yang dipakai untuk mengirim jawaban -->
+  <!-- Form POST mengirim jawaban -->
   <form id="answerForm" method="POST" style="display: none;">
       {% csrf_token %}
       <input type="hidden" name="jawaban" id="jawabanInput">
@@ -169,7 +180,7 @@ const jawabanInput = document.getElementById("jawabanInput");
 buttons.forEach(btn => {
     btn.addEventListener("click", () => {
 
-        // highlight jawaban
+        // highlight jawaban yang dipilih
         buttons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
 
@@ -188,18 +199,5 @@ nextBtn.addEventListener("click", function (e) {
     }
 });
 </script>
-
-<style>
-    .answer-btn.active {
-        background-color: #5a6cff;
-        color: white;
-        border: 2px solid white;
-    }
-
-    .btn-berikutnya.disabled {
-        pointer-events: none;
-        opacity: 0.5;
-    }
-</style>
 </body>
 </html>

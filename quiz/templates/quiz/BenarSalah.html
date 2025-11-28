@@ -118,13 +118,11 @@
 
   </div>
 
-  <!-- FORM POST TERSEMBUNYI -->
   <form id="answerForm" method="POST" action="{% url 'tampil_soal' quiz.id nomor %}">
       {% csrf_token %}
       <input type="hidden" name="jawaban" id="jawabanInput">
   </form>
 
-  <!-- Tombol berikutnya -->
   <a id="nextBtn" href="#" class="btn btn-berikutnya disabled">
       Berikutnya ➜
   </a>
@@ -135,15 +133,15 @@ const nextBtn = document.getElementById("nextBtn");
 const answerForm = document.getElementById("answerForm");
 const jawabanInput = document.getElementById("jawabanInput");
 
-// Ketika user pilih BENAR/SALAH
+// Ketika user pilih benar/salah
 buttons.forEach(btn => {
     btn.addEventListener("click", () => {
 
-        // hilangkan warna aktif sebelumnya
+        // highlight jawaban yang dipilih
         buttons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
 
-        // simpan jawaban
+        // simpan jawaban yang dipilih
         jawabanInput.value = btn.dataset.value;
 
         // aktifkan tombol next
@@ -151,7 +149,7 @@ buttons.forEach(btn => {
     });
 });
 
-// Ketika next ditekan → submit POST
+// Ketika next ditekan, kirm  POST
 nextBtn.addEventListener("click", function (e) {
     e.preventDefault();
     answerForm.submit();

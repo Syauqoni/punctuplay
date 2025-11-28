@@ -7,136 +7,183 @@
     <title>Pilih Topik Kuis | PunctuPlay</title>
 
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: "Poppins", sans-serif;
-            overflow-x: hidden;
-        }
+    /* BODY & BACKGROUND tetap sama */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        overflow-x: hidden;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-        .background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url("{% static 'images/background.png' %}");
-            background-size: cover;
-            background-position: center;
-            filter: blur(10px);
-            z-index: -1;
-        }
+    .background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("{% static 'images/background.png' %}");
+        background-size: cover;
+        background-position: center;
+        filter: blur(10px);
+        z-index: -1;
+    }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 60px 20px 80px;
-            text-align: center;
-        }
+    .container {
+        padding: 60px 20px 80px;
+        text-align: center;
+        width: 100%;
+        max-width: 1200px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-        .title {
-            background-color: #5a6cff;
-            color: white;
-            padding: 12px 40px;
-            border-radius: 12px;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 40px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
+    .title {
+        background-color: #5a6cff;
+        color: white;
+        padding: 12px 40px;
+        border-radius: 12px;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
 
-        .level-buttons a {
-            background:#5a6cff; 
-            color:white; 
-            padding:10px 25px; 
-            border-radius:10px; 
-            margin:5px; 
-            text-decoration:none; 
-            font-weight:600;
-            display: inline-block;
-        }
+    .level-buttons {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 40px;
+    }
 
-        .level-buttons a.active {
-            background: #3f48ff;
-            box-shadow: 0 0 10px rgba(255,255,255,0.4);
-        }
+    .level-buttons a {
+        background:#5a6cff; 
+        color:white; 
+        padding:10px 25px; 
+        border-radius:10px; 
+        text-decoration:none; 
+        font-weight:600;
+        transition: 0.3s;
+    }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-            gap: 25px;
-            width: 90%;
-            max-width: 1200px;
-            margin-top: 30px;
-        }
+    .level-buttons a.active {
+        background: #3f48ff;
+        box-shadow: 0 0 10px rgba(255,255,255,0.4);
+    }
 
+    /* GRID CARD */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 25px;
+        width: 100%;
+        justify-items: center;
+    }
+
+    .card {
+        background-color: rgba(93, 110, 255, 0.95);
+        border-radius: 16px;
+        overflow: hidden;
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
+        transition: 0.3s ease, transform 0.3s ease;
+        width: 100%;
+        max-width: 220px;
+        height: 260px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .card:hover {
+        transform: translateY(-7px) scale(1.02);
+        box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+    }
+
+    .card-top {
+        height: 160px;
+        background: rgba(140, 155, 255, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .card-top img {
+        max-width: 100%;
+        max-height: 150px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    .card-title {
+        background-color: #5a6cff;
+        padding: 12px;
+        min-height: 70px;
+        font-weight: 600;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    /* tombol home tetap sama */
+    .btn-home {
+        position: fixed;
+        top: 25px;
+        left: 25px;
+        background-color: #5a6cff;
+        border: 2px solid white;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-decoration: none;
+        font-size: 22px;
+        transition: 0.3s;
+        z-index: 99;
+    }
+
+    .btn-home:hover {
+        background-color: #6d7bff;
+    }
+
+    @media (max-width: 768px) {
         .card {
-            background-color: rgba(93, 110, 255, 0.9);
-            border-radius: 16px;
-            overflow: hidden;
-            cursor: pointer;
-            text-decoration: none;
-            color: white;
-            transition: 0.3s ease;
-            height: 240px;
-            display: flex;
-            flex-direction: column;
+            max-width: 45%;
+            height: auto;
         }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        .grid {
+            gap: 15px;
         }
-
-        .card-top {
-            height: 150px;
-            background: rgba(140, 155, 255, 0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .title {
+            font-size: 20px;
+            padding: 10px 25px;
         }
-
-        .card-top img {
-            max-width: 100%;
-            max-height: 140px;
-            object-fit: contain;
+        .level-buttons a {
+            padding: 8px 18px;
+            font-size: 14px;
         }
+    }
 
-        .card-title {
-            background-color: #5a6cff;
-            padding: 12px;
-            min-height: 80px;
-            font-weight: 600;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+    @media (max-width: 480px) {
+        .card {
+            max-width: 90%;
         }
+    }
+</style>
 
-        .btn-home {
-            position: fixed;
-            top: 25px;
-            left: 25px;
-            background-color: #5a6cff;
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-decoration: none;
-            font-size: 22px;
-            transition: 0.3s;
-            z-index: 99;
-        }
-
-        .btn-home:hover {
-            background-color: #6d7bff;
-        }
-
-    </style>
 </head>
 <body>
 
