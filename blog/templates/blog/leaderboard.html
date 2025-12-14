@@ -110,12 +110,20 @@
             <div class="title">LEADERBOARD</div>
 
             <div class="header">
+                <span class="col-left">WAKTU</span>
                 <span class="col-left">NAMA</span>
                 <span class="col-right">SKOR</span>
             </div>
 
             {% for player in players %}
             <div class="row">
+                <span class="col-left">
+                    {% if player.total_time_spent %}
+                        {{ player.total_time_spent }} detik
+                    {% else %}
+                        -
+                    {% endif %}
+                </span>
                 <span class="col-left">{{ player.user.username }}</span>
                 <span class="col-right">{{ player.total_poin }}</span>
             </div>

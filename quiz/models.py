@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from accounts.models import UserProfile   # PENTING agar tidak bentrok
+from accounts.models import UserProfile   
 
 
 class Quiz(models.Model):
@@ -52,7 +52,6 @@ class Soal(models.Model):
 
 
 class UserJawaban(models.Model):
-    """Simpan jawaban user untuk setiap soal"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     soal = models.ForeignKey(Soal, on_delete=models.CASCADE)
     jawaban_user = models.TextField()
@@ -68,7 +67,6 @@ class UserJawaban(models.Model):
 
 
 class ProgressQuiz(models.Model):
-    """Progress user dalam 1 kuis"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
 
@@ -82,7 +80,6 @@ class ProgressQuiz(models.Model):
 
 
 class Lencana(models.Model):
-    """Lencana sesuai total XP atau pencapaian"""
     nama = models.CharField(max_length=100)
     deskripsi = models.TextField(blank=True, null=True)
     xp_minimal = models.IntegerField(default=0)
@@ -93,8 +90,9 @@ class Lencana(models.Model):
 class RiwayatKuis(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-    skor = models.IntegerField(default=0)   # ← UBAH NAMA FIELD AGAR SESUAI
+    skor = models.IntegerField(default=0)   
     terakhir_main = models.DateTimeField(auto_now=True)
+    best_time = models.FloatField(null=True, blank=True)
 
     class Meta:
         unique_together = ('user', 'quiz')

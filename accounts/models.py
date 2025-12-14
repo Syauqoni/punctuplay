@@ -17,32 +17,37 @@ class UserProfile(models.Model):
 
     # Rank / lencana teks
     rank_name = models.CharField(max_length=100, default="Pemula tanda baca")
+    total_time_spent = models.FloatField(default=0)
+    total_xp = models.IntegerField(default=0)
+
+
+ 
+
 
     def add_xp(self, amount):
         """Tambah XP sekaligus cek naik level, max level 15000"""
         if self.level >= 15000:
             return
-
+        
+        self.total_xp += amount
         self.xp += amount
 
         while self.xp >= self.max_xp and self.level < 15000:
-            self.xp -= self.max_xp
             self.level += 1
-            # max_xp bertambah progresif: 300 → 600 → 900 …
             self.max_xp += 300
             if self.max_xp > 15000:
-                self.max_xp = 15000  # batas maksimum
+                self.max_xp = 15000  
 
         self.save()
 
     def update_rank(self):
-        if self.level < 5:
+        if self.level < 2:
             self.rank_name = "Pemula tanda baca"
-        elif self.level < 10:
+        elif self.level < 3:
             self.rank_name = "Penjelajah kalimat"
-        elif self.level < 50:
+        elif self.level < 4:
             self.rank_name = "Ahli tanda baca dasar"
-        elif self.level < 200:
+        elif self.level < 5:
             self.rank_name = "Master-nya Tanda Baca"
         else:
             self.rank_name = "Grandmaster Punctuplay"

@@ -90,7 +90,12 @@
 <body>
 
 {% include "quiz/progress.html" with progress=progress %}
-
+  <div id="timer" 
+     style="position:absolute; top: 20px; right: 30px; 
+            font-size: 1.3rem; font-weight: 700; 
+            background:#ffffff; color:#000; 
+            padding:8px 16px; border-radius:12px;">
+  </div>
 <form method="POST">
     {% csrf_token %}
 
@@ -114,42 +119,188 @@
         Berikutnya ➜
     </button>
 
+    <input type="hidden" id="jawabanInput" name="jawaban">
+    <input type="hidden" id="timerInput" name="timer">
+    <input type="hidden" id="timeoutFlag" name="timeout" value="0">
 </form>
 
+{% if prev_nomor is not None %}
+<a href="{% url 'tampil_soal' quiz.id prev_nomor %}" 
+   class="btn btn-warning" 
+   style="position:absolute; bottom:25px; left:30px;">
+   ⬅ Kembali
+</a>
+{% endif %}
+
 <script>
-    const inputs = document.querySelectorAll(".isian");
-    const btnNext = document.getElementById("btnNext");
+// =========================
+// AJAX SIMPAN JAWABAN
+// =========================
+function simpanKeServer(soalId, jawaban) {
+    fetch("{% url 'simpan_jawaban_ajax' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: `soal_id=${soalId}&jawaban=${encodeURIComponent(jawaban)}`
+    }).catch(err => console.warn("Gagal save AJAX:", err));
+}
 
-    const allowed = ['.', ',', '!', '?', ':', ';', '-', '—', '…', '"', "'", 
-                     '(', ')', '[', ']', '{', '}', '/', '`'];
 
-    inputs.forEach((input, index) => {
-        input.addEventListener("input", function () {
+// =========================
+// VARIABEL
+// =========================
+const inputs = document.querySelectorAll(".isian");
+const btnNext = document.getElementById("btnNext");
+const jawabanInput = document.getElementById("jawabanInput");
+const answerForm = document.querySelector("form");
 
-            if (!allowed.includes(this.value)) {
-                this.value = "";
-                return;
-            }
+const soalIndex = {{ nomor }};
+const soalId = {{ soal.id }};
+const storageKey = "jawaban_soal_" + soalIndex;
 
-            if (this.value && inputs[index + 1]) {
-                inputs[index + 1].focus();
-            }
+const allowed = ['.', ',', '!', '?', ':', ';', '-', '—', '…', '"', "'", 
+                 '(', ')', '[', ']', '{', '}', '/', '`'];
 
-            checkFilled();
-        });
+
+// =========================
+// RESTORE JAWABAN SEBELUMNYA
+// =========================
+let saved = sessionStorage.getItem(storageKey);
+
+if (!saved || saved.trim() === "") {
+    saved = "{{ jawaban_sebelumnya|default:'' }}";
+}
+
+if (saved && saved.trim() !== "") {
+    const chars = saved.split("");
+
+    inputs.forEach((input, i) => {
+        if (chars[i]) input.value = chars[i];
     });
 
-    function checkFilled() {
-        const allFilled = Array.from(inputs).every(i => i.value.trim() !== "");
-        btnNext.disabled = !allFilled;
+    jawabanInput.value = saved;
+    btnNext.disabled = false;
+    btnNext.classList.add("active");
+}
 
-        if (allFilled) {
-            btnNext.classList.add("active");
-        } else {
-            btnNext.classList.remove("active");
+
+// =========================
+// INPUT HANDLER
+// =========================
+
+inputs.forEach((input, index) => {
+    input.addEventListener("input", function () {
+
+        // Hanya boleh simbol tertentu
+        if (!allowed.includes(this.value)) {
+            this.value = "";
+            return;
         }
-    }
-</script>
 
+        // Fokus otomatis ke next
+        if (this.value && inputs[index + 1]) {
+            inputs[index + 1].focus();
+        }
+
+        updateJawaban();
+        checkFilled();
+    });
+});
+
+
+// =========================
+// SIMPAN JAWABAN
+// =========================
+
+function updateJawaban() {
+    const jawaban = [...inputs].map(i => i.value.trim()).join("");
+
+    // simpan ke hidden input
+    jawabanInput.value = jawaban;
+
+    // simpan ke sessionStorage
+    sessionStorage.setItem(storageKey, jawaban);
+
+    // simpan ke server via AJAX
+    simpanKeServer(soalId, jawaban);
+}
+
+
+// =========================
+// CEK LENGKAP
+// =========================
+
+function checkFilled() {
+    const allFilled = [...inputs].every(i => i.value.trim() !== "");
+
+    if (allFilled) {
+        btnNext.disabled = false;
+        btnNext.classList.add("active");
+    } else {
+        btnNext.disabled = true;
+        btnNext.classList.remove("active");
+    }
+}
+
+
+// =========================
+// TIMER GLOBAL
+// =========================
+
+
+let totalWaktu = 60;
+let waktu = localStorage.getItem("sisa_waktu");
+
+if (waktu === null) {
+    waktu = totalWaktu;
+    localStorage.setItem("sisa_waktu", totalWaktu);
+} else {
+    waktu = parseInt(waktu);
+}
+
+const timerDiv = document.getElementById("timer");
+timerDiv.textContent = `Sisa waktu: ${waktu}s`;
+
+let mulai = Date.now();
+
+let countdown = setInterval(() => {
+
+    waktu--;
+    timerDiv.textContent = `Sisa waktu: ${waktu}s`;
+    localStorage.setItem("sisa_waktu", waktu);
+
+    // --- HITUNG LAMA WAKTU DIPAKAI ---
+    let lama = ((Date.now() - mulai) / 1000).toFixed(2);
+
+    // --- SIMPAN TIMER KE FORM & LOCALSTORAGE ---
+    document.getElementById("timerInput").value = lama;
+    localStorage.setItem("lama_waktu", lama);
+
+    // --- JIKA WAKTU HABIS ---
+    if (waktu <= 0) {
+        clearInterval(countdown);
+        localStorage.removeItem("sisa_waktu");
+
+        document.getElementById("timeoutFlag").value = "1";
+        document.getElementById("timerInput").value = lama;
+
+        // --- KIRIM TIMER KE SERVER ---
+        fetch("{% url 'simpan_timer_ajax' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: `timer=${lama}`
+        });
+
+        answerForm.submit();
+    }
+
+}, 1000);
+
+</script>
 </body>
 </html>

@@ -111,7 +111,12 @@
 <body>
 
 {% include "quiz/progress.html" with progress=progress %}
-
+  <div id="timer" 
+     style="position:absolute; top: 20px; right: 30px; 
+            font-size: 1.3rem; font-weight: 700; 
+            background:#ffffff; color:#000; 
+            padding:8px 16px; border-radius:12px;">
+  </div>
 <!-- FORM UNTUK MENYIMPAN JAWABAN -->
 <form method="POST" action="{{ next_url }}">
     {% csrf_token %}
@@ -134,72 +139,144 @@
 
     <!-- simpan jawaban -->
     <input type="hidden" name="jawaban" id="jawabanInput">
+    <input type="hidden" id="timerInput" name="timer">
+    <input type="hidden" name="timeout" id="timeoutFlag" value="0">
 
     <button id="btnNext" type="submit" class="btn-berikutnya">Berikutnya ➜</button>
 </form>
 
+    {% if prev_nomor is not None %}
+    <a href="{% url 'tampil_soal' quiz.id prev_nomor %}" 
+    class="btn btn-warning" 
+    style="position:absolute; bottom:25px; left:30px;">
+    ⬅ Kembali
+    </a>
+    {% endif %}
+
 
 <script>
+// ------- AJAX SIMPAN JAWABAN ----------
+function simpanKeServer(soalId, jawaban) {
+    fetch("{% url 'simpan_jawaban_ajax' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: `soal_id=${soalId}&jawaban=${encodeURIComponent(jawaban)}`
+    }).catch(err => console.warn("Gagal save AJAX:", err));
+}
+
+
+
+// ========== VARIABEL GLOBAL ==========
 let dragged = null;
 const dropSlots = document.querySelectorAll(".drop-slot");
 const btnNext = document.getElementById("btnNext");
 const optionBox = document.getElementById("optionBox");
 const jawabanInput = document.getElementById("jawabanInput");
+const timeoutFlag = document.getElementById("timeoutFlag");
+const answerForm = document.querySelector("form");
 
-// Event drag start
-document.querySelectorAll(".option").forEach(opt => {
-    opt.addEventListener("dragstart", () => {
-        dragged = opt;
+const soalIndex = {{ nomor }};
+const soalId = {{ soal.id }};
+const storageKey = "jawaban_soal_" + soalIndex;
+
+
+// ========== RESTORE JAWABAN SEBELUMNYA ==========
+let saved = sessionStorage.getItem(storageKey);
+
+if (!saved || saved.trim() === "") {
+    saved = "{{ jawaban_sebelumnya|default:'' }}";
+}
+
+if (saved && saved.trim() !== "") {
+    let arr = saved.split(",");
+
+    dropSlots.forEach((slot, i) => {
+        if (arr[i]) {
+            slot.textContent = arr[i];
+            slot.dataset.filled = "true";
+        }
     });
+
+    // Hilangkan opsi yang sudah terpakai
+    document.querySelectorAll(".option").forEach(opt => {
+        if (arr.includes(opt.dataset.value)) opt.remove();
+    });
+
+    jawabanInput.value = saved;
+    btnNext.classList.add("active");
+    btnNext.disabled = false;
+}
+
+
+
+// ========== DRAG START ==========
+document.querySelectorAll(".option").forEach(opt => {
+    opt.addEventListener("dragstart", () => dragged = opt);
 });
 
-// Slot menerima drop
+
+// ========== DROP LOGIC ==========
 dropSlots.forEach(slot => {
+
     slot.addEventListener("dragover", e => e.preventDefault());
 
     slot.addEventListener("drop", e => {
         e.preventDefault();
         if (!dragged) return;
 
-        // Jika slot sudah terisi, kembalikan isinya ke daftar option
+        // Jika slot sudah berisi → kembalikan item lama ke optionBox
         if (slot.dataset.filled === "true") {
-            const oldValue = slot.textContent.trim();
+            const oldVal = slot.textContent.trim();
 
             let newOpt = document.createElement("div");
             newOpt.classList.add("option");
+            newOpt.textContent = oldVal;
+            newOpt.dataset.value = oldVal;
             newOpt.setAttribute("draggable", "true");
-            newOpt.dataset.value = oldValue;
-            newOpt.textContent = oldValue;
 
             newOpt.addEventListener("dragstart", () => dragged = newOpt);
 
             optionBox.appendChild(newOpt);
         }
 
-        // Mengganti slot dengan nilai baru
+        // Isi slot dengan yang baru
         slot.textContent = dragged.dataset.value;
         slot.dataset.filled = "true";
 
-        // Hapus opsi dari list
         dragged.remove();
         dragged = null;
 
         updateJawaban();
-        checkAllSlotsFilled();
+        checkFilled();
     });
 });
 
-// Menyimpan jawaban
+
+
+// ========== UPDATE JAWABAN KE INPUT, SESSION, SERVER ==========
 function updateJawaban() {
-    const arr = Array.from(dropSlots).map(slot => slot.textContent.trim());
-    jawabanInput.value = arr.join(",");
+    const arr = [...dropSlots].map(s => s.textContent.trim());
+    const final = arr.join(",");
+
+    jawabanInput.value = final;
+
+    // Simpan ke sessionStorage
+    sessionStorage.setItem(storageKey, final);
+
+    // Simpan ke server
+    simpanKeServer(soalId, final);
 }
 
-// Mencek apakah semua slot sdh terisi
-function checkAllSlotsFilled() {
-    const allFilled = Array.from(dropSlots).every(slot => slot.dataset.filled === "true");
 
-    if (allFilled) {
+
+// ========== CEK SEMUA SLOT TERISI ==========
+function checkFilled() {
+    const full = [...dropSlots].every(s => s.dataset.filled === "true");
+
+    if (full) {
         btnNext.classList.add("active");
         btnNext.disabled = false;
     } else {
@@ -207,7 +284,62 @@ function checkAllSlotsFilled() {
         btnNext.disabled = true;
     }
 }
+
+
+// TIMER 
+let totalWaktu = 60;
+let waktu = localStorage.getItem("sisa_waktu");
+
+if (waktu === null) {
+    waktu = totalWaktu;
+    localStorage.setItem("sisa_waktu", totalWaktu);
+} else {
+    waktu = parseInt(waktu);
+}
+
+const timerDiv = document.getElementById("timer");
+timerDiv.textContent = `Sisa waktu: ${waktu}s`;
+
+let mulai = Date.now();
+
+let countdown = setInterval(() => {
+
+    waktu--;
+    timerDiv.textContent = `Sisa waktu: ${waktu}s`;
+    localStorage.setItem("sisa_waktu", waktu);
+
+    // --- HITUNG LAMA WAKTU DIPAKAI ---
+    let lama = ((Date.now() - mulai) / 1000).toFixed(2);
+
+    // --- SIMPAN TIMER KE FORM & LOCALSTORAGE ---
+    document.getElementById("timerInput").value = lama;
+    localStorage.setItem("lama_waktu", lama);
+
+    // --- JIKA WAKTU HABIS ---
+    if (waktu <= 0) {
+        clearInterval(countdown);
+        localStorage.removeItem("sisa_waktu");
+
+        document.getElementById("timeoutFlag").value = "1";
+        document.getElementById("timerInput").value = lama;
+
+        // --- KIRIM TIMER KE SERVER ---
+        fetch("{% url 'simpan_timer_ajax' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: `timer=${lama}`
+        });
+
+        answerForm.submit();
+    }
+
+}, 1000);
+
 </script>
+
 
 </body>
 </html>

@@ -11,7 +11,9 @@ from django.shortcuts import redirect
 def home(request):
     profile = UserProfile.objects.get(user=request.user)
 
-    xp_percent = int((profile.xp / profile.max_xp) * 100)
+    xp_percent = 0
+    if profile.max_xp > 0:
+        xp_percent = int((profile.xp / profile.max_xp) * 100)
 
     context = {
         "profile": profile,
@@ -19,7 +21,7 @@ def home(request):
     }
     return render(request, "blog/home.html", context)
 def leaderboard(request):
-    players = UserProfile.objects.order_by('-total_poin')  # urut dari poin terbesar
+    players = UserProfile.objects.order_by('-total_poin', 'total_time_spent')  
     return render(request, "blog/leaderboard.html", {"players": players})
 
 def logout_user(request):

@@ -159,6 +159,17 @@
         background-color: #6d7bff;
     }
 
+    .locked {
+        background: gray;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        opacity: 0.7;
+        cursor: not-allowed;
+        font-weight: 600;
+    }
+
+
     @media (max-width: 768px) {
         .card {
             max-width: 45%;
@@ -196,9 +207,33 @@
         <div class="title">PILIH TOPIK KUIS</div>
         
         <div class="level-buttons">
-            <a href="?level=1" class="{% if level == 1 %}active{% endif %}">LEVEL 1</a>
-            <a href="?level=2" class="{% if level == 2 %}active{% endif %}">LEVEL 2</a>
-            <a href="?level=3" class="{% if level == 3 %}active{% endif %}">LEVEL 3</a>
+
+            <!-- LEVEL 1 selalu bisa dibuka -->
+            <a href="?level=1"
+            class="{% if level == 1 %}active{% endif %}">
+            LEVEL 1
+            </a>
+
+            <!-- LEVEL 2 terkunci jika level user < 2 -->
+            {% if profile.level >= 2 %}
+                <a href="?level=2"
+                class="{% if level == 2 %}active{% endif %}">
+                LEVEL 2
+                </a>
+            {% else %}
+                <span class="locked">LEVEL 2 🔒</span>
+            {% endif %}
+
+            <!-- LEVEL 3 terkunci jika level user < 3 -->
+            {% if profile.level >= 3 %}
+                <a href="?level=3"
+                class="{% if level == 3 %}active{% endif %}">
+                LEVEL 3
+                </a>
+            {% else %}
+                <span class="locked">LEVEL 3 🔒</span>
+            {% endif %}
+
         </div>
 
         <div class="grid">
@@ -222,6 +257,9 @@
         </div>
 
     </div>
-
+<script>
+    localStorage.removeItem("sisa_waktu");
+    localStorage.removeItem("lama_waktu");
+</script>
 </body>
 </html>

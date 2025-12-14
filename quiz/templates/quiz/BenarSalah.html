@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kuis Benar atau Salah</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
     body {
       background-image: url("{% static 'images/background.png' %}");
@@ -71,7 +72,6 @@
     }
 
     .btn-berikutnya.disabled {
-  
       opacity: 0.5;
       pointer-events: none;
     }
@@ -88,8 +88,6 @@
         border: 3px solid #384aff;
         text-decoration: none;
         transition: 0.3s ease;
-        opacity: 1;
-        pointer-events: auto;
     }
     
     .btn-berikutnya:hover {
@@ -97,14 +95,21 @@
         border: 3px solid #ffffff;
         color: white;
     }
-
   </style>
+
 </head>
 <body>
 
-  {% include "quiz/progress.html" with progress=progress %}
+{% include "quiz/progress.html" with progress=progress %}
 
-  <div class="quiz-container">
+<div id="timer" 
+     style="position:absolute; top: 20px; right: 30px; 
+            font-size: 1.3rem; font-weight: 700; 
+            background:#ffffff; color:#000; 
+            padding:8px 16px; border-radius:12px;">
+</div>
+
+<div class="quiz-container">
 
     <div class="question">
         <p><strong>{{ soal.pertanyaan|safe }}</strong></p>
@@ -116,45 +121,157 @@
         <button type="button" class="btn-option" data-value="0">SALAH</button>
     </div>
 
-  </div>
+</div>
 
-  <form id="answerForm" method="POST" action="{% url 'tampil_soal' quiz.id nomor %}">
-      {% csrf_token %}
-      <input type="hidden" name="jawaban" id="jawabanInput">
-  </form>
+<form id="answerForm" method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="jawaban" id="jawabanInput">
+    <input type="hidden" id="timerInput" name="timer">
+    <input type="hidden" name="timeout" id="timeoutFlag" value="0">
+</form>
 
-  <a id="nextBtn" href="#" class="btn btn-berikutnya disabled">
-      Berikutnya ➜
-  </a>
+
+<a id="nextBtn" href="#" class="btn btn-berikutnya disabled">Berikutnya ➜</a>
+
+{% if prev_nomor is not None %}
+<a href="{% url 'tampil_soal' quiz.id prev_nomor %}" 
+   class="btn btn-warning" 
+   style="position:absolute; bottom:25px; left:30px;">
+   ⬅ Kembali
+</a>
+{% endif %}
 
 <script>
-const buttons = document.querySelectorAll(".btn-option");
-const nextBtn = document.getElementById("nextBtn");
-const answerForm = document.getElementById("answerForm");
-const jawabanInput = document.getElementById("jawabanInput");
-
-// Ketika user pilih benar/salah
-buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-
-        // highlight jawaban yang dipilih
-        buttons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        // simpan jawaban yang dipilih
-        jawabanInput.value = btn.dataset.value;
-
-        // aktifkan tombol next
-        nextBtn.classList.remove("disabled");
+function simpanKeServer(soalId, jawaban) {
+    fetch("{% url 'simpan_jawaban_ajax' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: `soal_id=${soalId}&jawaban=${encodeURIComponent(jawaban)}`
+    }).catch(err => {
+        // optional: console.warn jika offline / error
+        console.warn("AJAX save failed:", err);
     });
-});
+}
 
-// Ketika next ditekan, kirm  POST
-nextBtn.addEventListener("click", function (e) {
-    e.preventDefault();
-    answerForm.submit();
+document.addEventListener("DOMContentLoaded", () => {
+
+    const buttons = document.querySelectorAll(".btn-option");
+    const nextBtn = document.getElementById("nextBtn");
+    const answerForm = document.getElementById("answerForm");
+    const jawabanInput = document.getElementById("jawabanInput");
+    const timeoutFlag = document.getElementById("timeoutFlag");
+
+    const soalIndex = {{ nomor }};
+    const soalId = {{ soal.id }};
+    const storageKey = "jawaban_soal_" + soalIndex;
+
+    // =============== RESTORE JAWABAN ===============
+    let saved = sessionStorage.getItem(storageKey);
+    if (!saved || saved === "") {
+        saved = "{{ jawaban_sebelumnya|default:'' }}".trim();
+    }
+
+    if (saved !== null && saved !== "") {
+        const btnFound = [...buttons].find(b => b.dataset.value === saved);
+        if (btnFound) {
+            buttons.forEach(b => b.classList.remove("active"));
+            btnFound.classList.add("active");
+
+            jawabanInput.value = saved;          // "1" atau "0"
+            nextBtn.classList.remove("disabled");
+        }
+    }
+
+    // =============== PILIH JAWABAN ===============
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            // UI highlight
+            buttons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            // jawaban dalam format yang server harapkan: "1" atau "0"
+            const jawaban = btn.dataset.value;
+
+            // simpan ke input form (agar POST fallback tetap benar)
+            jawabanInput.value = jawaban;
+
+            // simpan local (untuk restore & highlight)
+            sessionStorage.setItem(storageKey, jawaban);
+
+            // simpan server (AJAX) langsung
+            simpanKeServer(soalId, jawaban);
+
+            // aktifkan next
+            nextBtn.classList.remove("disabled");
+        });
+    });
+
+    // =============== NEXT ===============
+    nextBtn.addEventListener("click", e => {
+        e.preventDefault();
+        if (!nextBtn.classList.contains("disabled")) {
+            answerForm.submit();
+        }
+    });
+
+  // TIMER 
+  let totalWaktu = 60;
+  let waktu = localStorage.getItem("sisa_waktu");
+
+  if (waktu === null) {
+      waktu = totalWaktu;
+      localStorage.setItem("sisa_waktu", totalWaktu);
+  } else {
+      waktu = parseInt(waktu);
+  }
+
+  const timerDiv = document.getElementById("timer");
+  timerDiv.textContent = `Sisa waktu: ${waktu}s`;
+
+  let mulai = Date.now();
+
+  let countdown = setInterval(() => {
+
+      waktu--;
+      timerDiv.textContent = `Sisa waktu: ${waktu}s`;
+      localStorage.setItem("sisa_waktu", waktu);
+
+      // --- HITUNG LAMA WAKTU DIPAKAI ---
+      let lama = ((Date.now() - mulai) / 1000).toFixed(2);
+
+      // --- SIMPAN TIMER KE FORM & LOCALSTORAGE ---
+      document.getElementById("timerInput").value = lama;
+      localStorage.setItem("lama_waktu", lama);
+
+      // --- JIKA WAKTU HABIS ---
+      if (waktu <= 0) {
+          clearInterval(countdown);
+          localStorage.removeItem("sisa_waktu");
+
+          document.getElementById("timeoutFlag").value = "1";
+          document.getElementById("timerInput").value = lama;
+
+          // --- KIRIM TIMER KE SERVER ---
+          fetch("{% url 'simpan_timer_ajax' %}", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                  "X-CSRFToken": "{{ csrf_token }}"
+              },
+              body: `timer=${lama}`
+          });
+
+          answerForm.submit();
+      }
+
+  }, 1000);
 });
 </script>
-</body>
 
+
+</body>
 </html>

@@ -116,7 +116,13 @@
 <body>
 
   {% include "quiz/progress.html" with progress=progress %}
-  
+  <div id="timer" 
+     style="position:absolute; top: 20px; right: 30px; 
+            font-size: 1.3rem; font-weight: 700; 
+            background:#ffffff; color:#000; 
+            padding:8px 16px; border-radius:12px;">
+  </div>
+
   <div class="quiz-container">
   
     <div class="question">
@@ -124,80 +130,236 @@
         <p>Pilih jawaban yang benar:</p>
     </div>
 
-    <div class="answers">
+  <div class="answers">
 
-        {% if soal.opsi_a %}
-        {% with teks=soal.opsi_a|striptags %}
-        <button class="answer-btn" data-value="A" data-text="{{ teks|slice:'3:' }}">
-            {{ teks }}
-        </button>
-        {% endwith %}
-        {% endif %}
+    {% if soal.opsi_a %}
+    {% with teks=soal.opsi_a|striptags %}
+    <button class="answer-btn {% if jawaban_sebelumnya and 'A' in jawaban_sebelumnya %}active{% endif %}"
+            data-value="A" data-text="{{ teks|slice:'3:' }}">
+        {{ teks }}
+    </button>
 
-        {% if soal.opsi_b %}
-        {% with teks=soal.opsi_b|striptags %}
-        <button class="answer-btn" data-value="B" data-text="{{ teks|slice:'3:' }}">
-            {{ teks }}
-        </button>
-        {% endwith %}
-        {% endif %}
 
-        {% if soal.opsi_c %}
-        {% with teks=soal.opsi_c|striptags %}
-        <button class="answer-btn" data-value="C" data-text="{{ teks|slice:'3:' }}">
-            {{ teks }}
-        </button>
-        {% endwith %}
-        {% endif %}
+    {% endwith %}
+    {% endif %}
 
-        {% if soal.opsi_d %}
-        {% with teks=soal.opsi_d|striptags %}
-        <button class="answer-btn" data-value="D" data-text="{{ teks|slice:'3:' }}">
-            {{ teks }}
-        </button>
-        {% endwith %}
-        {% endif %}
-    </div>
+    {% if soal.opsi_b %}
+    {% with teks=soal.opsi_b|striptags %}
+    <button class="answer-btn {% if jawaban_sebelumnya and 'B' in jawaban_sebelumnya %}active{% endif %}"
+            data-value="B" data-text="{{ teks|slice:'3:' }}">
+        {{ teks }}
+    </button>
+
+
+    {% endwith %}
+    {% endif %}
+
+    {% if soal.opsi_c %}
+    {% with teks=soal.opsi_c|striptags %}
+    <button class="answer-btn {% if jawaban_sebelumnya and 'C' in jawaban_sebelumnya %}active{% endif %}"
+            data-value="C" data-text="{{ teks|slice:'3:' }}">
+        {{ teks }}
+    </button>
+
+
+    {% endwith %}
+    {% endif %}
+
+    {% if soal.opsi_d %}
+    {% with teks=soal.opsi_d|striptags %}
+    <button class="answer-btn {% if jawaban_sebelumnya and 'D' in jawaban_sebelumnya %}active{% endif %}"
+            data-value="D" data-text="{{ teks|slice:'3:' }}">
+        {{ teks }}
+    </button>
+
+    {% endwith %}
+    {% endif %}
+
+</div>
+
 
   </div>
 
-  <!-- Form POST mengirim jawaban -->
   <form id="answerForm" method="POST" style="display: none;">
-      {% csrf_token %}
-      <input type="hidden" name="jawaban" id="jawabanInput">
+    {% csrf_token %}
+    <input type="hidden" name="jawaban" id="jawabanInput">
+    <input type="hidden" name="timeout" id="timeoutFlag" value="0">
+    <input type="hidden" id="timerInput" name="timer" value="0">
   </form>
   
   <a id="nextBtn" class="btn btn-berikutnya disabled">
       Berikutnya ➜
   </a>
 
+{% if prev_nomor is not None %}
+<button type="button" class="btn btn-warning"
+        onclick="window.location.href='{% url 'tampil_soal' quiz_id prev_nomor %}?nocache=' + Date.now();"
+        style="position:absolute; bottom:25px; left:30px;">
+   ⬅ Kembali
+</button>
+{% endif %}
+
 <script>
-const buttons = document.querySelectorAll(".answer-btn");
-const nextBtn = document.getElementById("nextBtn");
-const answerForm = document.getElementById("answerForm");
-const jawabanInput = document.getElementById("jawabanInput");
+function goBack() {
+    window.location.href = "{{ request.path|slice:':-1' }}{{ prev_nomor }}/?nocache=" + Date.now();
+}
+</script>
 
-buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-
-        // highlight jawaban yang dipilih
-        buttons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        // simpan jawaban yang dipilih
-        jawabanInput.value = btn.dataset.value + ". " + btn.dataset.text;
-
-        // aktifkan tombol next
-        nextBtn.classList.remove("disabled");
+<script>
+function simpanKeServer(soalId, jawaban) {
+    fetch("{% url 'simpan_jawaban_ajax' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: `soal_id=${soalId}&jawaban=${encodeURIComponent(jawaban)}`
     });
-});
+}
 
-// Ketika Next ditekan, kirim POST
-nextBtn.addEventListener("click", function (e) {
+document.addEventListener("DOMContentLoaded", () => {
+
+    {% if nomor == 0 %}
+    sessionStorage.clear();
+    {% endif %}
+
+    const buttons = document.querySelectorAll(".answer-btn");
+    const nextBtn = document.getElementById("nextBtn");
+    const answerForm = document.getElementById("answerForm");
+    const jawabanInput = document.getElementById("jawabanInput");
+    const soalIndex = {{ nomor }};
+    const soalId = {{ soal.id }};  // penting untuk simpan ke server
+    const storageKey = "jawaban_soal_" + soalIndex;
+
+
+    // ======================
+    // RESTORE JAWABAN
+    // ======================
+    let saved = sessionStorage.getItem(storageKey);
+    if (!saved || saved === "") {
+        saved = "{{ jawaban_sebelumnya|default:'' }}".trim();
+    }
+
+    if (saved && saved.length > 0) {
+        const huruf = saved.charAt(0);
+        const btnFound = [...buttons].find(b => b.dataset.value === huruf);
+
+        if (btnFound) {
+            jawabanInput.value = huruf + ". " + btnFound.dataset.text;
+            nextBtn.classList.remove("disabled");
+
+            buttons.forEach(b => b.classList.remove("active"));
+            btnFound.classList.add("active");
+        }
+    }
+
+    // KLIK JAWABAN → SIMPAN
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            buttons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const jawabanLengkap = btn.dataset.value + ". " + btn.dataset.text;
+            jawabanInput.value = jawabanLengkap;
+
+            sessionStorage.setItem(storageKey, btn.dataset.value);
+            simpanKeServer(soalId, jawabanLengkap);
+            nextBtn.classList.remove("disabled");
+        });
+    });
+
+    // Next 
+nextBtn.addEventListener("click", function () {
     if (!nextBtn.classList.contains("disabled")) {
+
+        let total = 60;
+        let sisa = parseInt(localStorage.getItem("sisa_waktu")) || 0;
+        let lama = total - sisa;
+
+        // Cegah nilai aneh
+        if (lama < 1) lama = 1;
+        if (lama > 60) lama = 60;
+
+        // CEK apakah ini soal terakhir
+        const nomorSoal = {{ nomor }};
+        const soalTerakhir = {{ total_soal|default:10 }} - 1;
+
+        // Jika BUKAN soal terakhir → dianggap waktu habis
+        let kirimTimer = true;
+        if (nomorSoal < soalTerakhir) {
+            kirimTimer = false;
+        }
+
+        // simpan
+        localStorage.setItem("lama_waktu", lama);
+        document.getElementById("timerInput").value = lama;
+
+        // kirim ke server
+        fetch("{% url 'simpan_timer_ajax' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: "timer=" + encodeURIComponent(lama)
+        });
+
         answerForm.submit();
     }
 });
+
+
+
+
+  // TIMER 
+  let totalWaktu = 60;
+  let waktu = localStorage.getItem("sisa_waktu");
+
+  if (waktu === null) {
+      waktu = totalWaktu;
+      localStorage.setItem("sisa_waktu", totalWaktu);
+  } else {
+      waktu = parseInt(waktu);
+  }
+
+  const timerDiv = document.getElementById("timer");
+  timerDiv.textContent = `Sisa waktu: ${waktu}s`;
+
+  let mulai = Date.now();
+
+  let countdown = setInterval(() => {
+
+    waktu--;
+    timerDiv.textContent = `Sisa waktu: ${waktu}s`;
+    localStorage.setItem("sisa_waktu", waktu);
+
+    // Jika waktu habis → auto submit
+    if (waktu <= 0) {
+        clearInterval(countdown);
+        localStorage.removeItem("sisa_waktu");
+
+        document.getElementById("timeoutFlag").value = "1";
+
+        // Saat timeout, nilai timer = 60 detik
+        document.getElementById("timerInput").value = 60;
+
+        fetch("{% url 'simpan_timer_ajax' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: "timer=60"
+        });
+
+        answerForm.submit();
+    }
+
+}, 1000);
+});
 </script>
+
+
 </body>
 </html>
