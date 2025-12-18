@@ -111,6 +111,27 @@
         opacity: 0.5;
     }
 
+    .btn-kembali {
+        position: absolute;
+        background-color: #ffffff;
+        bottom: 25px;
+        left: 30px;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 25px;
+        font-weight: 600;
+        color: #000000;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: 0.3s ease;
+        border: 3px solid #5a6cff;
+    }
+
+    .btn-kembali:hover {
+        background-color: rgba(99, 128, 255, 0.95);
+        border: 3px solid #ffffff;
+        color: white;
+    }
+
   </style>
 </head>
 <body>
@@ -192,7 +213,7 @@
   </a>
 
 {% if prev_nomor is not None %}
-<button type="button" class="btn btn-warning"
+<button type="button" class="btn btn-kembali"
         onclick="window.location.href='{% url 'tampil_soal' quiz_id prev_nomor %}?nocache=' + Date.now();"
         style="position:absolute; bottom:25px; left:30px;">
    ⬅ Kembali
